@@ -1,67 +1,49 @@
-import { Link } from '@tanstack/react-router'
+import {
+	ArrowRightCircleIcon,
+	Bars3BottomLeftIcon,
+	CalendarIcon,
+} from "@heroicons/react/24/solid";
+import { useAppStore } from "~/data/store";
 
-import { useState } from 'react'
-import { Home, Menu, X } from 'lucide-react'
+export const Header = () => {
+	const { setSidebarIsOpen } = useAppStore();
 
-export default function Header() {
-  const [isOpen, setIsOpen] = useState(false)
-
-  return (
-    <>
-      <header className="p-4 flex items-center bg-gray-800 text-white shadow-lg">
-        <button
-          onClick={() => setIsOpen(true)}
-          className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-          aria-label="Open menu"
-        >
-          <Menu size={24} />
-        </button>
-        <h1 className="ml-4 text-xl font-semibold">
-          <Link to="/">
-            <img
-              src="/tanstack-word-logo-white.svg"
-              alt="TanStack Logo"
-              className="h-10"
-            />
-          </Link>
-        </h1>
-      </header>
-
-      <aside
-        className={`fixed top-0 left-0 h-full w-80 bg-gray-900 text-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        <div className="flex items-center justify-between p-4 border-b border-gray-700">
-          <h2 className="text-xl font-bold">Navigation</h2>
-          <button
-            onClick={() => setIsOpen(false)}
-            className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
-            aria-label="Close menu"
-          >
-            <X size={24} />
-          </button>
-        </div>
-
-        <nav className="flex-1 p-4 overflow-y-auto">
-          <Link
-            to="/"
-            onClick={() => setIsOpen(false)}
-            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
-            activeProps={{
-              className:
-                'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
-            }}
-          >
-            <Home size={20} />
-            <span className="font-medium">Home</span>
-          </Link>
-
-          {/* Demo Links Start */}
-
-          {/* Demo Links End */}
-        </nav>
-      </aside>
-    </>
-  )
-}
+	return (
+		<>
+			<header className="flex h-12 w-full items-center justify-between bg-gray-50 p-2">
+				<button
+					title="Open Menu"
+					type="button"
+					className="flex transform rounded-md p-2 font-bold text-gray-900 duration-150 ease-in-out hover:bg-gray-200 active:scale-95"
+					onClick={() => setSidebarIsOpen(true)}
+				>
+					<Bars3BottomLeftIcon className="h-6 w-6 text-blue-900" />
+					<p className="ml-2 hidden font-semibold md:block">Menu</p>
+				</button>
+				<div className="flex items-center">
+					<button
+						title="Pick New Date"
+						type="button"
+						className="rounded-md p-2 text-blue-900 duration-150 ease-in-out hover:bg-gray-200 active:scale-95"
+						onClick={() => null}
+					>
+						<CalendarIcon className="h-6 w-6" />
+					</button>
+					<h1 className="text-center font-bold text-base text-gray-900 sm:text-xl">
+						USA County Map
+					</h1>
+				</div>
+				<button
+					title="Open Slideover"
+					type="button"
+					className="plausible-event-name=Events flex rounded-md p-2 text-gray-900 transition duration-150 ease-in-out hover:bg-gray-200 active:scale-95"
+					onClick={() => null}
+				>
+					<p className="mr-2 hidden font-semibold md:block">Placeholder</p>
+					<ArrowRightCircleIcon className="h-6 w-6 text-blue-900" />
+				</button>
+			</header>
+			<div className="h-0.5 w-full bg-gradient-to-r from-green-400 via-blue-400 to-purple-400" />
+		</>
+	);
+};
