@@ -2691,8 +2691,8 @@ export const counties: CountyData[] = [
 		population: 3423,
 		medianAge: 41.8,
 		temperature: {
-			avgTempF: 71.04,
-			isEstimated: false,
+			avgTempF: 38.6,
+			isEstimated: true,
 		},
 		votes: {
 			totals: {

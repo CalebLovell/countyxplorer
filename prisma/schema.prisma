@@ -7,8 +7,66 @@ datasource db {
   provider = "postgresql"
 }
 
-model Todo {
-  id        Int      @id @default(autoincrement())
-  title     String
-  createdAt DateTime @default(now())
+model County {
+  id    String @id // FIPS code e.g. "01001"
+  name  String
+  state String
+
+  age         Age?
+  politics    Politics?
+  housing     Housing?
+  population  Population?
+  rent        Rent?
+  temperature Temperature?
+}
+
+model Age {
+  countyId  String @id
+  county    County @relation(fields: [countyId], references: [id])
+  medianAge Float
+}
+
+model Population {
+  countyId   String @id
+  county     County @relation(fields: [countyId], references: [id])
+  population Int
+}
+
+model Temperature {
+  countyId    String  @id
+  county      County  @relation(fields: [countyId], references: [id])
+  avgTempF    Float
+  isEstimated Boolean
+}
+
+model Politics {
+  countyId      String  @id
+  county        County  @relation(fields: [countyId], references: [id])
+  democrat      Int
+  republican    Int
+  total         Int
+  pctDemocrat   Float
+  pctRepublican Float
+  winner        String
+  isEstimated   Boolean
+}
+
+model Housing {
+  countyId              String  @id
+  county                County  @relation(fields: [countyId], references: [id])
+  medianHomeValue       Int
+  percentNationalMedian Float?
+  isEstimated           Boolean
+}
+
+model Rent {
+  countyId    String  @id
+  county      County  @relation(fields: [countyId], references: [id])
+  medianRent  Int
+  efficiency  Int
+  oneBR       Int
+  twoBR       Int
+  threeBR     Int
+  fourBR      Int
+  isEstimated Boolean
 }
