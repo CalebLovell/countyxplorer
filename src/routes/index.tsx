@@ -1,22 +1,44 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
+import { FeedbackButton } from "~/components/FeedbackButton";
 import { Header } from "~/components/Header";
 import { Key } from "~/components/Key";
-import { Sidebar } from "~/components/Sidebar";
+import { LeftBar } from "~/components/LeftBar";
+import { RightBar } from "~/components/RightBar";
 import { USAMap } from "~/components/USAMap";
+import { CountiesProvider } from "~/data/CountiesContext";
+import { fetchData } from "~/data/fetchData";
 
-export const Route = createFileRoute("/")({ component: App });
+const searchDefaults = {
+	feedbackModal: false,
+};
+
+export const Route = createFileRoute("/")({
+	validateSearch: (search: Record<string, unknown>) => ({
+		feedbackModal: search.feedbackModal === true,
+	}),
+	search: {
+		middlewares: [stripSearchParams(searchDefaults)],
+	},
+	loader: () => fetchData(),
+	component: App,
+});
 
 function App() {
+	const counties = Route.useLoaderData();
 	return (
-		<div className="flex h-screen flex-col items-center bg-linear-to-br from-green-50 to-blue-50">
-			<Header />
-			<main className="flex h-full w-full flex-1 items-center justify-center">
-				<Sidebar />
-				<div className="relative h-full w-full">
-					<USAMap />
-					<Key />
-				</div>
-			</main>
-		</div>
+		<CountiesProvider counties={counties}>
+			<div className="flex h-dvh flex-col items-center bg-radial-[at_bottom_right] from-red-100 via-orange-100 to-blue-100">
+				<Header />
+				<main className="flex min-h-0 w-full flex-1 items-center">
+					<LeftBar />
+					<div className="relative h-content w-full">
+						<USAMap />
+						<Key />
+					</div>
+					<RightBar />
+				</main>
+			</div>
+			<FeedbackButton />
+		</CountiesProvider>
 	);
 }

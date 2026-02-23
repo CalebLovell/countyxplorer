@@ -1,4 +1,5 @@
 import type { Feature, GeoJsonProperties, Geometry } from "geojson";
+import { useCounties } from "~/data/CountiesContext";
 import { getActiveCounty, getColor } from "~/data/functions";
 import { useAppStore } from "~/data/store";
 
@@ -8,6 +9,7 @@ type Props = {
 };
 
 export const CountyPath = ({ d, path }: Props) => {
+	const { counties, stdev } = useCounties();
 	const {
 		population,
 		population_val,
@@ -28,7 +30,7 @@ export const CountyPath = ({ d, path }: Props) => {
 		selectedCounty,
 	} = useAppStore();
 	const isSelected = Number(selectedCounty?.id) === Number(d.id);
-	const activeCounty = getActiveCounty(Number(d.id));
+	const activeCounty = getActiveCounty(Number(d.id), counties);
 
 	const filterValues = {
 		population,
@@ -48,7 +50,9 @@ export const CountyPath = ({ d, path }: Props) => {
 		median_rent_importance,
 	};
 
-	const color = activeCounty ? getColor(activeCounty, filterValues) : `purple`;
+	const color = activeCounty
+		? getColor(activeCounty, filterValues, stdev)
+		: `purple`;
 
 	const onClick = () => {
 		setSelectedCounty(activeCounty ?? null);

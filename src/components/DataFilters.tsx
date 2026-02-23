@@ -1,4 +1,4 @@
-import { standardDeviation } from "~/data/functions";
+import { useCounties } from "~/data/CountiesContext";
 import { useAppStore } from "~/data/store";
 
 export const DataFilters = () => {
@@ -36,17 +36,19 @@ export const DataFilters = () => {
 	} = useAppStore();
 
 	const {
-		population_min,
-		population_max,
-		median_age_min,
-		median_age_max,
-		temperature_min,
-		temperature_max,
-		homeValue_min,
-		homeValue_max,
-		medianRent_min,
-		medianRent_max,
-	} = standardDeviation();
+		stdev: {
+			population_min,
+			population_max,
+			median_age_min,
+			median_age_max,
+			temperature_min,
+			temperature_max,
+			homeValue_min,
+			homeValue_max,
+			medianRent_min,
+			medianRent_max,
+		},
+	} = useCounties();
 
 	return (
 		<section>

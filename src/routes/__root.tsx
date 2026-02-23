@@ -35,6 +35,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body>
+				{/* <script
+					defer
+					data-domain="countyxplorer.com"
+					src="https://plausible.io/js/script.tagged-events.js"
+				/> */}
 				{children}
 				<TanStackDevtools
 					config={{

@@ -1,21 +1,10 @@
 import { create } from "zustand";
-import { standardDeviation } from "~/data/functions";
+import type { Stdev } from "~/data/functions";
 import type { CountyData } from "~/data/types";
 
-const {
-	population_min,
-	population_max,
-	median_age_min,
-	median_age_max,
-	temperature_min,
-	temperature_max,
-	homeValue_min,
-	homeValue_max,
-	medianRent_min,
-	medianRent_max,
-} = standardDeviation();
-
 type AppState = {
+	initialized: boolean;
+	initRanges: (stdev: Stdev) => void;
 	sidebarIsOpen: boolean;
 	setSidebarIsOpen: (by: boolean) => void;
 	keyIsVisible: boolean;
@@ -62,6 +51,16 @@ type AppState = {
 };
 
 export const useAppStore = create<AppState>((set) => ({
+	initialized: false,
+	initRanges: (stdev) =>
+		set({
+			initialized: true,
+			population_val: [stdev.population_min, stdev.population_max],
+			age_val: [stdev.median_age_min, stdev.median_age_max],
+			temperature_val: [stdev.temperature_min, stdev.temperature_max],
+			home_value_val: [stdev.homeValue_min, stdev.homeValue_max],
+			median_rent_val: [stdev.medianRent_min, stdev.medianRent_max],
+		}),
 	sidebarIsOpen: false,
 	setSidebarIsOpen: (by: boolean) => set({ sidebarIsOpen: by }),
 	keyIsVisible: true,
@@ -73,7 +72,7 @@ export const useAppStore = create<AppState>((set) => ({
 	// Population Filter
 	population: true,
 	setPopulation: (value: boolean) => set({ population: value }),
-	population_val: [population_min, population_max],
+	population_val: [0, 0],
 	setPopulationVal: (value: [number, number]) => set({ population_val: value }),
 	population_importance: 3,
 	setPopulationImportance: (value: number) =>
@@ -81,14 +80,14 @@ export const useAppStore = create<AppState>((set) => ({
 	// Median Age Filter
 	age: true,
 	setAge: (value: boolean) => set({ age: value }),
-	age_val: [median_age_min, median_age_max],
+	age_val: [0, 0],
 	setAgeVal: (value: [number, number]) => set({ age_val: value }),
 	age_importance: 3,
 	setAgeImportance: (value: number) => set({ age_importance: value }),
 	// Temperature Filter
 	temperature: true,
 	setTemperature: (value: boolean) => set({ temperature: value }),
-	temperature_val: [temperature_min, temperature_max],
+	temperature_val: [0, 0],
 	setTemperatureVal: (value: [number, number]) =>
 		set({ temperature_val: value }),
 	temperature_importance: 3,
@@ -97,7 +96,7 @@ export const useAppStore = create<AppState>((set) => ({
 	// Home Value Filter
 	home_value: true,
 	setHomeValue: (value: boolean) => set({ home_value: value }),
-	home_value_val: [homeValue_min, homeValue_max],
+	home_value_val: [0, 0],
 	setHomeValueVal: (value: [number, number]) => set({ home_value_val: value }),
 	home_value_importance: 3,
 	setHomeValueImportance: (value: number) =>
@@ -105,7 +104,7 @@ export const useAppStore = create<AppState>((set) => ({
 	// Median Rent Filter
 	median_rent: true,
 	setMedianRent: (value: boolean) => set({ median_rent: value }),
-	median_rent_val: [medianRent_min, medianRent_max],
+	median_rent_val: [0, 0],
 	setMedianRentVal: (value: [number, number]) =>
 		set({ median_rent_val: value }),
 	median_rent_importance: 3,

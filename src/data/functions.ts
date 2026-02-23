@@ -1,19 +1,16 @@
 import stddev from "just-standard-deviation";
-import { counties } from "~/data/counties";
 import type { CountyData } from "~/data/types";
 
-export const getCountyData = () => {
-	return counties;
-};
+export type Stdev = ReturnType<typeof standardDeviation>;
 
-export const standardDeviation = () => {
+export const standardDeviation = (counties: CountyData[]) => {
 	const population = counties.map((x) => x.population);
 	const median_age = counties.map((x) => x.medianAge);
 	const temperate = counties.map((x) => x.temperature.avgTempF);
 	const homeValue = counties.map((x) => x.housing.medianHomeValue);
 	const medianRent = counties.map((x) => x.rent.medianRent);
 
-	const vals = {
+	return {
 		population_stdev: stddev(population) / 2,
 		population_max: Math.max(...population),
 		population_min: Math.min(...population),
@@ -30,12 +27,10 @@ export const standardDeviation = () => {
 		medianRent_max: Math.max(...medianRent),
 		medianRent_min: Math.min(...medianRent),
 	};
-	return vals;
 };
 
-export const getActiveCounty = (county_id: number) => {
-	const activeCounty = counties.find((x) => Number(x.id) === county_id);
-	return activeCounty;
+export const getActiveCounty = (county_id: number, counties: CountyData[]) => {
+	return counties.find((x) => Number(x.id) === county_id);
 };
 
 export const getColor = (
@@ -57,6 +52,7 @@ export const getColor = (
 		median_rent_val: [number, number];
 		median_rent_importance: number;
 	},
+	stdev: Stdev,
 ) => {
 	const {
 		population,
@@ -76,19 +72,17 @@ export const getColor = (
 		median_rent_importance,
 	} = filterValues;
 
-	const vals = standardDeviation();
 	const {
 		population_stdev,
 		median_age_stdev,
 		temperature_stdev,
 		homeValue_stdev,
 		medianRent_stdev,
-	} = vals;
+	} = stdev;
 
 	let totalDeviations = 0;
 	let totalImportance = 0;
 
-	// Calculate weighted deviations for each active filter
 	if (population) {
 		const [minVal, maxVal] = population_val;
 		const rangeCenter = (minVal + maxVal) / 2;
@@ -134,15 +128,12 @@ export const getColor = (
 		totalImportance += median_rent_importance;
 	}
 
-	// If no filters are active, return default color
 	if (totalImportance === 0) {
-		return "#e5e7eb"; // Light gray for unfiltered counties
+		return "#e5e7eb";
 	}
 
-	// Calculate average weighted deviation
 	const avgDeviation = totalDeviations / totalImportance;
 
-	// Convert average deviation to weight (0-9 scale) - using original thresholds
 	let weight = 9;
 	if (avgDeviation <= 0.5) weight = 1;
 	else if (avgDeviation <= 1) weight = 2;
@@ -152,7 +143,6 @@ export const getColor = (
 	else if (avgDeviation <= 3) weight = 6;
 	else if (avgDeviation <= 3.5) weight = 7;
 	else if (avgDeviation <= 4) weight = 8;
-	// else weight = 9 (most different)
 
 	const colors: Record<number, string> = {
 		1: "#173B53",
