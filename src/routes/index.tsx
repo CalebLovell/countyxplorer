@@ -2,14 +2,17 @@ import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 import { FeedbackButton } from "~/components/FeedbackButton";
 import { Header } from "~/components/Header";
 import { Key } from "~/components/Key";
+import { LayerSwitcher } from "~/components/LayerSwitcher";
 import { LeftBar } from "~/components/LeftBar";
 import { RightBar } from "~/components/RightBar";
 import { USAMap } from "~/components/USAMap";
 import { CountiesProvider } from "~/data/CountiesContext";
 import { fetchData } from "~/data/fetchData";
+import type { LayerKey } from "~/data/functions";
 
 const searchDefaults = {
 	feedbackModal: false,
+	layer: "combined" as "combined" | LayerKey,
 	population: true,
 	age: true,
 	temperature: true,
@@ -29,6 +32,18 @@ const clampImportance = (v: unknown) =>
 export const Route = createFileRoute("/")({
 	validateSearch: (search: Record<string, unknown>) => ({
 		feedbackModal: search.feedbackModal === true,
+		layer: (
+			[
+				"combined",
+				"population",
+				"age",
+				"temperature",
+				"home_value",
+				"median_rent",
+			] as const
+		).includes(search.layer as "combined" | LayerKey)
+			? (search.layer as "combined" | LayerKey)
+			: "combined",
 		population: search.population !== false,
 		age: search.age !== false,
 		temperature: search.temperature !== false,
@@ -59,6 +74,9 @@ function App() {
 					<div className="relative h-content w-full">
 						<USAMap />
 						<Key />
+						<div className="-translate-x-1/2 absolute bottom-3 left-1/2 z-10">
+							<LayerSwitcher />
+						</div>
 					</div>
 					<RightBar />
 				</main>

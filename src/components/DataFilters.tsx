@@ -46,13 +46,24 @@ export const DataFilters = () => {
 		},
 	} = useCounties();
 
+	const { layer } = route.useSearch();
+
 	const navigate = useNavigate();
 
 	const set = (patch: Record<string, unknown>) =>
 		navigate({ from: "/", search: (prev) => ({ ...prev, ...patch }) });
 
 	return (
-		<section>
+		<section className="relative">
+			{layer !== "combined" && (
+				<div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/70 backdrop-blur-sm">
+					<p className="text-center font-medium text-gray-600 text-sm">
+						Switch to <strong>Combined</strong> view
+						<br />
+						to use filters
+					</p>
+				</div>
+			)}
 			<div className="space-y-2">
 				{/* Population Filter */}
 				<div

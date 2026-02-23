@@ -33,6 +33,18 @@ export const getActiveCounty = (county_id: number, counties: CountyData[]) => {
 	return counties.find((x) => Number(x.id) === county_id);
 };
 
+export const colors: Record<number, string> = {
+	1: "#173B53",
+	2: "#205274",
+	3: "rgb(50,128,181)",
+	4: "rgb(73,183,194)",
+	5: "rgb(133,204,187)",
+	6: "rgb(202,233,181)",
+	7: "rgb(254,255,207)",
+	8: "#FEFFE0",
+	9: "#ffffff",
+};
+
 export const getColor = (
 	county: CountyData,
 	filterValues: {
@@ -144,17 +156,54 @@ export const getColor = (
 	else if (avgDeviation <= 3.5) weight = 7;
 	else if (avgDeviation <= 4) weight = 8;
 
-	const colors: Record<number, string> = {
-		1: "#173B53",
-		2: "#205274",
-		3: "rgb(50,128,181)",
-		4: "rgb(73,183,194)",
-		5: "rgb(133,204,187)",
-		6: "rgb(202,233,181)",
-		7: "rgb(254,255,207)",
-		8: "#FEFFE0",
-		9: "#ffffff",
-	};
+	return colors[weight];
+};
 
+export type LayerKey =
+	| "population"
+	| "age"
+	| "temperature"
+	| "home_value"
+	| "median_rent";
+
+export const getLayerColor = (
+	county: CountyData,
+	layer: LayerKey,
+	stdev: Stdev,
+): string => {
+	let value: number;
+	let min: number;
+	let max: number;
+
+	switch (layer) {
+		case "population":
+			value = county.population;
+			min = stdev.population_min;
+			max = stdev.population_max;
+			break;
+		case "age":
+			value = county.medianAge;
+			min = stdev.median_age_min;
+			max = stdev.median_age_max;
+			break;
+		case "temperature":
+			value = county.temperature.avgTempF;
+			min = stdev.temperature_min;
+			max = stdev.temperature_max;
+			break;
+		case "home_value":
+			value = county.housing.medianHomeValue;
+			min = stdev.homeValue_min;
+			max = stdev.homeValue_max;
+			break;
+		case "median_rent":
+			value = county.rent.medianRent;
+			min = stdev.medianRent_min;
+			max = stdev.medianRent_max;
+			break;
+	}
+
+	const normalized = (value - min) / (max - min);
+	const weight = Math.max(1, Math.min(9, 9 - Math.floor(normalized * 8)));
 	return colors[weight];
 };

@@ -1,7 +1,7 @@
 import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import type { Feature, GeoJsonProperties, Geometry } from "geojson";
 import { useCounties } from "~/data/CountiesContext";
-import { getActiveCounty, getColor } from "~/data/functions";
+import { getActiveCounty, getColor, getLayerColor } from "~/data/functions";
 import { useAppStore } from "~/data/store";
 
 const route = getRouteApi("/");
@@ -14,6 +14,7 @@ type Props = {
 export const CountyPath = ({ d, path }: Props) => {
 	const { counties, stdev } = useCounties();
 	const {
+		layer,
 		population,
 		age,
 		temperature,
@@ -57,7 +58,9 @@ export const CountyPath = ({ d, path }: Props) => {
 	};
 
 	const color = activeCounty
-		? getColor(activeCounty, filterValues, stdev)
+		? layer === "combined"
+			? getColor(activeCounty, filterValues, stdev)
+			: getLayerColor(activeCounty, layer, stdev)
 		: "purple";
 
 	const onClick = () => {
