@@ -1,9 +1,8 @@
 import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useCounties } from "~/data/CountiesContext";
-import { useAppStore } from "~/data/store";
 
-const route = getRouteApi("/");
+const route = getRouteApi("/$layer");
 
 const arrayMedian = (arr: number[]): number => {
 	const sorted = [...arr].sort((a, b) => a - b);
@@ -15,15 +14,9 @@ const arrayMedian = (arr: number[]): number => {
 
 export const MedianPresetCard = () => {
 	const { counties, stdev } = useCounties();
-	const { layer } = route.useSearch();
+	const { layer } = route.useParams();
+	const search = route.useSearch();
 	const navigate = useNavigate();
-	const {
-		setPopulationVal,
-		setAgeVal,
-		setTemperatureVal,
-		setHomeValueVal,
-		setMedianRentVal,
-	} = useAppStore();
 
 	const medians = useMemo(
 		() => ({
@@ -81,22 +74,27 @@ export const MedianPresetCard = () => {
 	);
 
 	const apply = () => {
-		setPopulationVal(ranges.population);
-		setAgeVal(ranges.age);
-		setTemperatureVal(ranges.temperature);
-		setHomeValueVal(ranges.homeValue);
-		setMedianRentVal(ranges.rent);
 		navigate({
-			from: "/",
-			search: (prev) => ({
-				...prev,
-				layer: "combined",
+			to: "/$layer",
+			params: { layer: "combined" },
+			search: {
+				...search,
 				population: true,
 				age: true,
 				temperature: true,
 				home_value: true,
 				median_rent: true,
-			}),
+				population_min: ranges.population[0],
+				population_max: ranges.population[1],
+				age_min: ranges.age[0],
+				age_max: ranges.age[1],
+				temperature_min: ranges.temperature[0],
+				temperature_max: ranges.temperature[1],
+				home_value_min: ranges.homeValue[0],
+				home_value_max: ranges.homeValue[1],
+				rent_min: ranges.rent[0],
+				rent_max: ranges.rent[1],
+			},
 		});
 	};
 

@@ -1,7 +1,6 @@
 import { createContext, useContext, useMemo } from "react";
 import type { Stdev } from "~/data/functions";
 import { standardDeviation } from "~/data/functions";
-import { useAppStore } from "~/data/store";
 import type { CountyData } from "~/data/types";
 
 type CountiesContextValue = {
@@ -18,13 +17,6 @@ type Props = {
 
 export const CountiesProvider = ({ counties, children }: Props) => {
 	const stdev = useMemo(() => standardDeviation(counties), [counties]);
-
-	// Initialize store filter ranges synchronously on first render
-	const initRanges = useAppStore((s) => s.initRanges);
-	const initialized = useAppStore((s) => s.initialized);
-	if (!initialized) {
-		initRanges(stdev);
-	}
 
 	return (
 		<CountiesContext.Provider value={{ counties, stdev }}>

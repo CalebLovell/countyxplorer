@@ -6,7 +6,7 @@ import * as topojson from "topojson-client";
 import { CountyPath } from "~/components/CountyPath";
 import { usaCountyGeojson } from "~/data/usaCountyGeojson";
 
-const route = getRouteApi("/");
+const route = getRouteApi("/$layer");
 
 const usaTopoJson = topojson.feature(
 	usaCountyGeojson,

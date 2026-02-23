@@ -1,7 +1,7 @@
 import { getRouteApi } from "@tanstack/react-router";
 import { useCounties } from "~/data/CountiesContext";
 
-const route = getRouteApi("/");
+const route = getRouteApi("/$layer");
 
 export const DataPanel = () => {
 	const { county: selectedCountyId } = route.useSearch();

@@ -1,8 +1,8 @@
 import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { useCounties } from "~/data/CountiesContext";
-import { useAppStore } from "~/data/store";
+import { useFilterRanges } from "~/data/useFilterRanges";
 
-const route = getRouteApi("/");
+const route = getRouteApi("/$layer");
 
 export const DataFilters = () => {
 	const {
@@ -18,18 +18,8 @@ export const DataFilters = () => {
 		median_rent_importance,
 	} = route.useSearch();
 
-	const {
-		population_val,
-		setPopulationVal,
-		age_val,
-		setAgeVal,
-		temperature_val,
-		setTemperatureVal,
-		home_value_val,
-		setHomeValueVal,
-		median_rent_val,
-		setMedianRentVal,
-	} = useAppStore();
+	const search = route.useSearch();
+	const { layer } = route.useParams();
 
 	const {
 		stdev: {
@@ -46,12 +36,28 @@ export const DataFilters = () => {
 		},
 	} = useCounties();
 
-	const { layer } = route.useSearch();
+	const {
+		population_val,
+		age_val,
+		temperature_val,
+		home_value_val,
+		median_rent_val,
+	} = useFilterRanges();
 
 	const navigate = useNavigate();
 
 	const set = (patch: Record<string, unknown>) =>
-		navigate({ from: "/", search: (prev) => ({ ...prev, ...patch }) });
+		navigate({
+			from: "/$layer",
+			search: { ...search, ...patch } as typeof search,
+		});
+
+	const setRange = (patch: Record<string, unknown>) =>
+		navigate({
+			from: "/$layer",
+			search: { ...search, ...patch } as typeof search,
+			replace: true,
+		});
 
 	return (
 		<section className="relative">
@@ -106,7 +112,7 @@ export const DataFilters = () => {
 									onChange={(e) => {
 										const newMin = Number(e.target.value);
 										if (newMin <= population_val[1]) {
-											setPopulationVal([newMin, population_val[1]]);
+											setRange({ population_min: newMin });
 										}
 									}}
 									disabled={!population}
@@ -122,7 +128,7 @@ export const DataFilters = () => {
 									onChange={(e) => {
 										const newMax = Number(e.target.value);
 										if (newMax >= population_val[0]) {
-											setPopulationVal([population_val[0], newMax]);
+											setRange({ population_max: newMax });
 										}
 									}}
 									disabled={!population}
@@ -195,7 +201,7 @@ export const DataFilters = () => {
 									onChange={(e) => {
 										const newMin = Number(e.target.value);
 										if (newMin <= age_val[1]) {
-											setAgeVal([newMin, age_val[1]]);
+											setRange({ age_min: newMin });
 										}
 									}}
 									disabled={!age}
@@ -211,7 +217,7 @@ export const DataFilters = () => {
 									onChange={(e) => {
 										const newMax = Number(e.target.value);
 										if (newMax >= age_val[0]) {
-											setAgeVal([age_val[0], newMax]);
+											setRange({ age_max: newMax });
 										}
 									}}
 									disabled={!age}
@@ -285,7 +291,7 @@ export const DataFilters = () => {
 									onChange={(e) => {
 										const newMin = Number(e.target.value);
 										if (newMin <= temperature_val[1]) {
-											setTemperatureVal([newMin, temperature_val[1]]);
+											setRange({ temperature_min: newMin });
 										}
 									}}
 									disabled={!temperature}
@@ -301,7 +307,7 @@ export const DataFilters = () => {
 									onChange={(e) => {
 										const newMax = Number(e.target.value);
 										if (newMax >= temperature_val[0]) {
-											setTemperatureVal([temperature_val[0], newMax]);
+											setRange({ temperature_max: newMax });
 										}
 									}}
 									disabled={!temperature}
@@ -375,7 +381,7 @@ export const DataFilters = () => {
 									onChange={(e) => {
 										const newMin = Number(e.target.value);
 										if (newMin <= home_value_val[1]) {
-											setHomeValueVal([newMin, home_value_val[1]]);
+											setRange({ home_value_min: newMin });
 										}
 									}}
 									disabled={!home_value}
@@ -391,7 +397,7 @@ export const DataFilters = () => {
 									onChange={(e) => {
 										const newMax = Number(e.target.value);
 										if (newMax >= home_value_val[0]) {
-											setHomeValueVal([home_value_val[0], newMax]);
+											setRange({ home_value_max: newMax });
 										}
 									}}
 									disabled={!home_value}
@@ -465,7 +471,7 @@ export const DataFilters = () => {
 									onChange={(e) => {
 										const newMin = Number(e.target.value);
 										if (newMin <= median_rent_val[1]) {
-											setMedianRentVal([newMin, median_rent_val[1]]);
+											setRange({ rent_min: newMin });
 										}
 									}}
 									disabled={!median_rent}
@@ -481,7 +487,7 @@ export const DataFilters = () => {
 									onChange={(e) => {
 										const newMax = Number(e.target.value);
 										if (newMax >= median_rent_val[0]) {
-											setMedianRentVal([median_rent_val[0], newMax]);
+											setRange({ rent_max: newMax });
 										}
 									}}
 									disabled={!median_rent}

@@ -1,7 +1,7 @@
 import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import type { LayerKey } from "~/data/functions";
 
-const route = getRouteApi("/");
+const route = getRouteApi("/$layer");
 
 type LayerOption = {
 	key: "combined" | LayerKey;
@@ -18,11 +18,12 @@ const layers: LayerOption[] = [
 ];
 
 export const LayerSwitcher = () => {
-	const { layer } = route.useSearch();
+	const { layer } = route.useParams();
+	const search = route.useSearch();
 	const navigate = useNavigate();
 
 	const setLayer = (key: "combined" | LayerKey) =>
-		navigate({ from: "/", search: (prev) => ({ ...prev, layer: key }) });
+		navigate({ to: "/$layer", params: { layer: key }, search });
 
 	return (
 		<div className="flex items-center rounded-full bg-white/90 p-1 shadow-lg backdrop-blur-sm">

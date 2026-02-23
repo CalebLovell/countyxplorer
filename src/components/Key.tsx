@@ -1,7 +1,7 @@
 import { getRouteApi } from "@tanstack/react-router";
 import type { LayerKey } from "~/data/functions";
 
-const route = getRouteApi("/");
+const route = getRouteApi("/$layer");
 
 const layerLabels: Record<LayerKey, string> = {
 	population: "Population",
@@ -12,7 +12,7 @@ const layerLabels: Record<LayerKey, string> = {
 };
 
 export const Key = () => {
-	const { layer } = route.useSearch();
+	const { layer } = route.useParams();
 
 	const lowLabel =
 		layer === "combined"
@@ -35,7 +35,7 @@ export const Key = () => {
 	];
 
 	return (
-		<div className="absolute top-2 right-3 flex items-center space-x-3 rounded-lg bg-slate-300 bg-opacity-80 p-3 backdrop-blur-sm">
+		<div className="-translate-x-1/2 absolute bottom-3 left-1/2 z-10 flex items-center space-x-3 rounded-lg bg-slate-300 bg-opacity-80 p-3 backdrop-blur-sm">
 			<span className="font-semibold text-black text-xs sm:text-sm">
 				{lowLabel}
 			</span>

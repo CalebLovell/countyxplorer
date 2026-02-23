@@ -2,9 +2,9 @@ import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import type { Feature, GeoJsonProperties, Geometry } from "geojson";
 import { useCounties } from "~/data/CountiesContext";
 import { getActiveCounty, getColor, getLayerColor } from "~/data/functions";
-import { useAppStore } from "~/data/store";
+import { useFilterRanges } from "~/data/useFilterRanges";
 
-const route = getRouteApi("/");
+const route = getRouteApi("/$layer");
 
 type Props = {
 	d: Feature<Geometry, GeoJsonProperties>;
@@ -13,8 +13,9 @@ type Props = {
 
 export const CountyPath = ({ d, path }: Props) => {
 	const { counties, stdev } = useCounties();
+	const { layer } = route.useParams();
+	const search = route.useSearch();
 	const {
-		layer,
 		population,
 		age,
 		temperature,
@@ -26,14 +27,14 @@ export const CountyPath = ({ d, path }: Props) => {
 		home_value_importance,
 		median_rent_importance,
 		county: selectedCountyId,
-	} = route.useSearch();
+	} = search;
 	const {
 		population_val,
 		age_val,
 		temperature_val,
 		home_value_val,
 		median_rent_val,
-	} = useAppStore();
+	} = useFilterRanges();
 	const navigate = useNavigate();
 
 	const isSelected = selectedCountyId === Number(d.id);
@@ -65,11 +66,8 @@ export const CountyPath = ({ d, path }: Props) => {
 
 	const onClick = () => {
 		navigate({
-			from: "/",
-			search: (prev) => ({
-				...prev,
-				county: isSelected ? null : Number(d.id),
-			}),
+			from: "/$layer",
+			search: { ...search, county: isSelected ? null : Number(d.id) },
 		});
 	};
 

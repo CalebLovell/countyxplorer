@@ -13,17 +13,18 @@ import { toast } from "sonner";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
 import { sendFeedback } from "~/data/sendFeedback";
 
-const route = getRouteApi("/");
+const route = getRouteApi("/$layer");
 
 export const FeedbackModal = () => {
-	const { feedbackModal } = route.useSearch();
+	const search = route.useSearch();
+	const { feedbackModal } = search;
 	const navigate = useNavigate();
 	const [message, setMessage] = useState("");
 
 	const close = () => {
 		navigate({
-			from: "/",
-			search: (prev) => ({ ...prev, feedbackModal: false }),
+			from: "/$layer",
+			search: { ...search, feedbackModal: false },
 		});
 		setMessage("");
 	};
