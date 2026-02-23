@@ -1,7 +1,15 @@
-import { useAppStore } from "~/data/store";
+import { getRouteApi } from "@tanstack/react-router";
+import { useCounties } from "~/data/CountiesContext";
+
+const route = getRouteApi("/");
 
 export const DataPanel = () => {
-	const { selectedCounty } = useAppStore();
+	const { county: selectedCountyId } = route.useSearch();
+	const { counties } = useCounties();
+	const selectedCounty =
+		selectedCountyId != null
+			? (counties.find((c) => Number(c.id) === selectedCountyId) ?? null)
+			: null;
 
 	const details = [
 		{

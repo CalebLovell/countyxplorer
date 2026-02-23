@@ -1,7 +1,10 @@
+import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import type { Feature, GeoJsonProperties, Geometry } from "geojson";
 import { useCounties } from "~/data/CountiesContext";
 import { getActiveCounty, getColor } from "~/data/functions";
 import { useAppStore } from "~/data/store";
+
+const route = getRouteApi("/");
 
 type Props = {
 	d: Feature<Geometry, GeoJsonProperties>;
@@ -12,24 +15,27 @@ export const CountyPath = ({ d, path }: Props) => {
 	const { counties, stdev } = useCounties();
 	const {
 		population,
-		population_val,
-		population_importance,
 		age,
-		age_val,
-		age_importance,
 		temperature,
-		temperature_val,
-		temperature_importance,
 		home_value,
-		home_value_val,
-		home_value_importance,
 		median_rent,
-		median_rent_val,
+		population_importance,
+		age_importance,
+		temperature_importance,
+		home_value_importance,
 		median_rent_importance,
-		setSelectedCounty,
-		selectedCounty,
+		county: selectedCountyId,
+	} = route.useSearch();
+	const {
+		population_val,
+		age_val,
+		temperature_val,
+		home_value_val,
+		median_rent_val,
 	} = useAppStore();
-	const isSelected = Number(selectedCounty?.id) === Number(d.id);
+	const navigate = useNavigate();
+
+	const isSelected = selectedCountyId === Number(d.id);
 	const activeCounty = getActiveCounty(Number(d.id), counties);
 
 	const filterValues = {
@@ -52,10 +58,16 @@ export const CountyPath = ({ d, path }: Props) => {
 
 	const color = activeCounty
 		? getColor(activeCounty, filterValues, stdev)
-		: `purple`;
+		: "purple";
 
 	const onClick = () => {
-		setSelectedCounty(activeCounty ?? null);
+		navigate({
+			from: "/",
+			search: (prev) => ({
+				...prev,
+				county: isSelected ? null : Number(d.id),
+			}),
+		});
 	};
 
 	const patternId = `diagonalHatch-${d.id}`;

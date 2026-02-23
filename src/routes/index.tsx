@@ -10,11 +10,36 @@ import { fetchData } from "~/data/fetchData";
 
 const searchDefaults = {
 	feedbackModal: false,
+	population: true,
+	age: true,
+	temperature: true,
+	home_value: true,
+	median_rent: true,
+	population_importance: 3,
+	age_importance: 3,
+	temperature_importance: 3,
+	home_value_importance: 3,
+	median_rent_importance: 3,
+	county: null as number | null,
 };
+
+const clampImportance = (v: unknown) =>
+	typeof v === "number" ? Math.min(5, Math.max(1, v)) : 3;
 
 export const Route = createFileRoute("/")({
 	validateSearch: (search: Record<string, unknown>) => ({
 		feedbackModal: search.feedbackModal === true,
+		population: search.population !== false,
+		age: search.age !== false,
+		temperature: search.temperature !== false,
+		home_value: search.home_value !== false,
+		median_rent: search.median_rent !== false,
+		population_importance: clampImportance(search.population_importance),
+		age_importance: clampImportance(search.age_importance),
+		temperature_importance: clampImportance(search.temperature_importance),
+		home_value_importance: clampImportance(search.home_value_importance),
+		median_rent_importance: clampImportance(search.median_rent_importance),
+		county: typeof search.county === "number" ? search.county : null,
 	}),
 	search: {
 		middlewares: [stripSearchParams(searchDefaults)],

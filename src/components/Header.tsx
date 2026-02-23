@@ -3,11 +3,8 @@ import {
 	Bars3BottomLeftIcon,
 	CalendarIcon,
 } from "@heroicons/react/24/solid";
-import { useAppStore } from "~/data/store";
 
 export const Header = () => {
-	const { setSidebarIsOpen } = useAppStore();
-
 	return (
 		<>
 			<header className="flex h-12 w-full items-center justify-between bg-gray-50 p-2">
@@ -15,7 +12,7 @@ export const Header = () => {
 					title="Open Menu"
 					type="button"
 					className="flex transform rounded-md p-2 font-bold text-gray-900 duration-150 ease-in-out hover:bg-gray-200 active:scale-95"
-					onClick={() => setSidebarIsOpen(true)}
+					onClick={() => null}
 				>
 					<Bars3BottomLeftIcon className="h-6 w-6 text-blue-900" />
 					<p className="ml-2 hidden font-semibold md:block">Menu</p>

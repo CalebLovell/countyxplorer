@@ -1,10 +1,12 @@
+import { getRouteApi } from "@tanstack/react-router";
 import * as d3 from "d3";
 import type { FeatureCollection, GeometryObject } from "geojson";
 import * as React from "react";
 import * as topojson from "topojson-client";
 import { CountyPath } from "~/components/CountyPath";
-import { useAppStore } from "~/data/store";
 import { usaCountyGeojson } from "~/data/usaCountyGeojson";
+
+const route = getRouteApi("/");
 
 const usaTopoJson = topojson.feature(
 	usaCountyGeojson,
@@ -51,13 +53,10 @@ export const USAMap = () => {
 		? path(countryBordersGeometry)
 		: null;
 
-	const { selectedCounty } = useAppStore();
-	const selectedId = selectedCounty?.id;
+	const { county: selectedId } = route.useSearch();
 	const counties = usaTopoJson.features;
-	const nonSelected = counties.filter(
-		(d) => Number(d.id) !== Number(selectedId),
-	);
-	const selected = counties.find((d) => Number(d.id) === Number(selectedId));
+	const nonSelected = counties.filter((d) => Number(d.id) !== selectedId);
+	const selected = counties.find((d) => Number(d.id) === selectedId);
 
 	return (
 		<svg

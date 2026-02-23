@@ -1,38 +1,34 @@
+import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { useCounties } from "~/data/CountiesContext";
 import { useAppStore } from "~/data/store";
+
+const route = getRouteApi("/");
 
 export const DataFilters = () => {
 	const {
 		population,
-		setPopulation,
+		age,
+		temperature,
+		home_value,
+		median_rent,
+		population_importance,
+		age_importance,
+		temperature_importance,
+		home_value_importance,
+		median_rent_importance,
+	} = route.useSearch();
+
+	const {
 		population_val,
 		setPopulationVal,
-		population_importance,
-		setPopulationImportance,
-		age,
-		setAge,
 		age_val,
 		setAgeVal,
-		age_importance,
-		setAgeImportance,
-		temperature,
-		setTemperature,
 		temperature_val,
 		setTemperatureVal,
-		temperature_importance,
-		setTemperatureImportance,
-		home_value,
-		setHomeValue,
 		home_value_val,
 		setHomeValueVal,
-		home_value_importance,
-		setHomeValueImportance,
-		median_rent,
-		setMedianRent,
 		median_rent_val,
 		setMedianRentVal,
-		median_rent_importance,
-		setMedianRentImportance,
 	} = useAppStore();
 
 	const {
@@ -50,15 +46,14 @@ export const DataFilters = () => {
 		},
 	} = useCounties();
 
+	const navigate = useNavigate();
+
+	const set = (patch: Record<string, unknown>) =>
+		navigate({ from: "/", search: (prev) => ({ ...prev, ...patch }) });
+
 	return (
 		<section>
-			<div className="font-semibold text-gray-900 text-xs leading-6">
-				Map Information
-			</div>
-			<div className="flex flex-col space-y-2 text-gray-900 text-sm">
-				<p>Explore the map using the filters below.</p>
-			</div>
-			<div className="mt-4 space-y-3">
+			<div className="space-y-2">
 				{/* Population Filter */}
 				<div
 					className={`rounded-lg border p-3 transition-all ${population ? "border-indigo-400 bg-indigo-50/50" : "border-gray-300 bg-gray-50"}`}
@@ -74,7 +69,7 @@ export const DataFilters = () => {
 							</span>
 							<button
 								type="button"
-								onClick={() => setPopulation(!population)}
+								onClick={() => set({ population: !population })}
 								className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
 									population ? "bg-indigo-600" : "bg-gray-300"
 								}`}
@@ -136,7 +131,7 @@ export const DataFilters = () => {
 									max={5}
 									value={population_importance}
 									onChange={(e) =>
-										setPopulationImportance(Number(e.target.value))
+										set({ population_importance: Number(e.target.value) })
 									}
 									disabled={!population}
 									className="h-2 flex-1 cursor-pointer appearance-none rounded-lg bg-indigo-200 disabled:cursor-not-allowed disabled:opacity-50"
@@ -163,7 +158,7 @@ export const DataFilters = () => {
 							</span>
 							<button
 								type="button"
-								onClick={() => setAge(!age)}
+								onClick={() => set({ age: !age })}
 								className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
 									age ? "bg-indigo-600" : "bg-gray-300"
 								}`}
@@ -224,7 +219,9 @@ export const DataFilters = () => {
 									min={1}
 									max={5}
 									value={age_importance}
-									onChange={(e) => setAgeImportance(Number(e.target.value))}
+									onChange={(e) =>
+										set({ age_importance: Number(e.target.value) })
+									}
 									disabled={!age}
 									className="h-2 flex-1 cursor-pointer appearance-none rounded-lg bg-indigo-200 disabled:cursor-not-allowed disabled:opacity-50"
 								/>
@@ -251,7 +248,7 @@ export const DataFilters = () => {
 							</span>
 							<button
 								type="button"
-								onClick={() => setTemperature(!temperature)}
+								onClick={() => set({ temperature: !temperature })}
 								className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
 									temperature ? "bg-indigo-600" : "bg-gray-300"
 								}`}
@@ -313,7 +310,7 @@ export const DataFilters = () => {
 									max={5}
 									value={temperature_importance}
 									onChange={(e) =>
-										setTemperatureImportance(Number(e.target.value))
+										set({ temperature_importance: Number(e.target.value) })
 									}
 									disabled={!temperature}
 									className="h-2 flex-1 cursor-pointer appearance-none rounded-lg bg-indigo-200 disabled:cursor-not-allowed disabled:opacity-50"
@@ -341,7 +338,7 @@ export const DataFilters = () => {
 							</span>
 							<button
 								type="button"
-								onClick={() => setHomeValue(!home_value)}
+								onClick={() => set({ home_value: !home_value })}
 								className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
 									home_value ? "bg-indigo-600" : "bg-gray-300"
 								}`}
@@ -403,7 +400,7 @@ export const DataFilters = () => {
 									max={5}
 									value={home_value_importance}
 									onChange={(e) =>
-										setHomeValueImportance(Number(e.target.value))
+										set({ home_value_importance: Number(e.target.value) })
 									}
 									disabled={!home_value}
 									className="h-2 flex-1 cursor-pointer appearance-none rounded-lg bg-indigo-200 disabled:cursor-not-allowed disabled:opacity-50"
@@ -431,7 +428,7 @@ export const DataFilters = () => {
 							</span>
 							<button
 								type="button"
-								onClick={() => setMedianRent(!median_rent)}
+								onClick={() => set({ median_rent: !median_rent })}
 								className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
 									median_rent ? "bg-indigo-600" : "bg-gray-300"
 								}`}
@@ -493,7 +490,7 @@ export const DataFilters = () => {
 									max={5}
 									value={median_rent_importance}
 									onChange={(e) =>
-										setMedianRentImportance(Number(e.target.value))
+										set({ median_rent_importance: Number(e.target.value) })
 									}
 									disabled={!median_rent}
 									className="h-2 flex-1 cursor-pointer appearance-none rounded-lg bg-indigo-200 disabled:cursor-not-allowed disabled:opacity-50"

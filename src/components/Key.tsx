@@ -1,8 +1,4 @@
-import { useAppStore } from "~/data/store";
-
 export const Key = () => {
-	const { keyIsVisible } = useAppStore();
-
 	const color8 = "#FEFFE0";
 	const color7 = "rgb(254,255,207)";
 	const color6 = "rgb(202,233,181)";
@@ -23,7 +19,6 @@ export const Key = () => {
 		color1,
 	];
 
-	if (!keyIsVisible) return null;
 	return (
 		<div className="absolute top-2 right-3 flex items-center space-x-3 rounded-lg bg-slate-300 bg-opacity-80 p-3 backdrop-blur-sm">
 			<span className="font-semibold text-black text-xs sm:text-sm">
