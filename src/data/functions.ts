@@ -3,6 +3,22 @@ import type { CountyData } from "~/data/types";
 
 export type Stdev = ReturnType<typeof standardDeviation>;
 
+const computeQuantileThresholds = (
+	values: number[],
+	numBuckets: number,
+): number[] => {
+	const sorted = [...values].sort((a, b) => a - b);
+	const thresholds: number[] = [];
+	for (let i = 1; i < numBuckets; i++) {
+		const idx = (i / numBuckets) * (sorted.length - 1);
+		const lower = Math.floor(idx);
+		const upper = Math.ceil(idx);
+		const frac = idx - lower;
+		thresholds.push(sorted[lower] * (1 - frac) + sorted[upper] * frac);
+	}
+	return thresholds;
+};
+
 export const standardDeviation = (counties: CountyData[]) => {
 	const population = counties.map((x) => x.population);
 	const median_age = counties.map((x) => x.medianAge);
@@ -14,18 +30,23 @@ export const standardDeviation = (counties: CountyData[]) => {
 		population_stdev: stddev(population) / 2,
 		population_max: Math.max(...population),
 		population_min: Math.min(...population),
+		population_quantiles: computeQuantileThresholds(population, 9),
 		median_age_stdev: stddev(median_age) / 2,
 		median_age_max: Math.max(...median_age),
 		median_age_min: Math.min(...median_age),
+		median_age_quantiles: computeQuantileThresholds(median_age, 9),
 		temperature_stdev: stddev(temperate) / 2,
 		temperature_max: Math.max(...temperate),
 		temperature_min: Math.min(...temperate),
+		temperature_quantiles: computeQuantileThresholds(temperate, 9),
 		homeValue_stdev: stddev(homeValue) / 2,
 		homeValue_max: Math.max(...homeValue),
 		homeValue_min: Math.min(...homeValue),
+		homeValue_quantiles: computeQuantileThresholds(homeValue, 9),
 		medianRent_stdev: stddev(medianRent) / 2,
 		medianRent_max: Math.max(...medianRent),
 		medianRent_min: Math.min(...medianRent),
+		medianRent_quantiles: computeQuantileThresholds(medianRent, 9),
 	};
 };
 
@@ -172,38 +193,35 @@ export const getLayerColor = (
 	stdev: Stdev,
 ): string => {
 	let value: number;
-	let min: number;
-	let max: number;
+	let thresholds: number[];
 
 	switch (layer) {
 		case "population":
 			value = county.population;
-			min = stdev.population_min;
-			max = stdev.population_max;
+			thresholds = stdev.population_quantiles;
 			break;
 		case "age":
 			value = county.medianAge;
-			min = stdev.median_age_min;
-			max = stdev.median_age_max;
+			thresholds = stdev.median_age_quantiles;
 			break;
 		case "temperature":
 			value = county.temperature.avgTempF;
-			min = stdev.temperature_min;
-			max = stdev.temperature_max;
+			thresholds = stdev.temperature_quantiles;
 			break;
 		case "home_value":
 			value = county.housing.medianHomeValue;
-			min = stdev.homeValue_min;
-			max = stdev.homeValue_max;
+			thresholds = stdev.homeValue_quantiles;
 			break;
 		case "median_rent":
 			value = county.rent.medianRent;
-			min = stdev.medianRent_min;
-			max = stdev.medianRent_max;
+			thresholds = stdev.medianRent_quantiles;
 			break;
 	}
 
-	const normalized = (value - min) / (max - min);
-	const weight = Math.max(1, Math.min(9, 9 - Math.floor(normalized * 8)));
-	return colors[weight];
+	// Count how many thresholds value exceeds (0–8), map to weight 9→1
+	let bucket = 0;
+	for (const t of thresholds) {
+		if (value > t) bucket++;
+	}
+	return colors[9 - bucket];
 };
