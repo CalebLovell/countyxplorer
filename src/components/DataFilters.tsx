@@ -2,6 +2,7 @@ import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
 import { useCounties } from "~/data/CountiesContext";
 import { useFilterRanges } from "~/data/useFilterRanges";
 
@@ -105,13 +106,13 @@ function RangeSlider({
 			{/* Value labels above thumbs */}
 			<div className="relative mb-1 h-4">
 				<span
-					className="absolute -translate-x-1/2 whitespace-nowrap font-mono text-[10px] text-indigo-700"
+					className="-translate-x-1/2 absolute whitespace-nowrap font-mono text-[10px] text-indigo-700"
 					style={{ left: `${minPct}%` }}
 				>
 					{formatValue(currentMin)}
 				</span>
 				<span
-					className="absolute -translate-x-1/2 whitespace-nowrap font-mono text-[10px] text-indigo-700"
+					className="-translate-x-1/2 absolute whitespace-nowrap font-mono text-[10px] text-indigo-700"
 					style={{ left: `${maxPct}%` }}
 				>
 					{formatValue(currentMax)}
@@ -130,7 +131,7 @@ function RangeSlider({
 				{/* Preference cursor at range midpoint */}
 				{!disabled && (
 					<div
-						className="absolute flex -translate-x-1/2 flex-col items-center"
+						className="-translate-x-1/2 absolute flex flex-col items-center"
 						style={{ left: `${midPct}%`, zIndex: 5 }}
 						title="Preference target (range midpoint)"
 					>
@@ -192,7 +193,7 @@ function InfoPopover({ content }: { content: string }) {
 			>
 				<InformationCircleIcon className="h-4 w-4" />
 			</PopoverButton>
-			<PopoverPanel className="absolute right-0 top-full z-50 mt-1 w-56 rounded-lg border border-gray-200 bg-white p-3 text-gray-600 text-xs shadow-lg">
+			<PopoverPanel className="absolute top-full right-0 z-50 mt-1 w-56 rounded-lg border border-gray-200 bg-white p-3 text-gray-600 text-xs shadow-lg">
 				{content}
 			</PopoverPanel>
 		</Popover>
@@ -275,28 +276,24 @@ function FilterCard({
 	useEffect(() => setLocalMax(currentMax), [currentMax]);
 
 	// Debounced range update using refs to avoid stale closures
-	const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 	const latestMinRef = useRef<number>(localMin);
 	const latestMaxRef = useRef<number>(localMax);
+
+	const debouncedRangeChange = useDebouncedCallback(
+		() => onRangeChange(latestMinRef.current, latestMaxRef.current),
+		250,
+	);
 
 	const handleMinChange = (v: number) => {
 		setLocalMin(v);
 		latestMinRef.current = v;
-		clearTimeout(timerRef.current);
-		timerRef.current = setTimeout(
-			() => onRangeChange(latestMinRef.current, latestMaxRef.current),
-			250,
-		);
+		debouncedRangeChange();
 	};
 
 	const handleMaxChange = (v: number) => {
 		setLocalMax(v);
 		latestMaxRef.current = v;
-		clearTimeout(timerRef.current);
-		timerRef.current = setTimeout(
-			() => onRangeChange(latestMinRef.current, latestMaxRef.current),
-			250,
-		);
+		debouncedRangeChange();
 	};
 
 	return (
