@@ -204,14 +204,19 @@ function InfoPopover({ content }: { content: string }) {
 function Toggle({
 	enabled,
 	onToggle,
+	ariaLabel,
 }: {
 	enabled: boolean;
 	onToggle: () => void;
+	ariaLabel?: string;
 }) {
 	return (
 		<button
 			type="button"
 			onClick={onToggle}
+			role="switch"
+			aria-checked={enabled}
+			aria-label={ariaLabel}
 			className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
 				enabled ? "bg-indigo-600" : "bg-gray-300"
 			}`}
