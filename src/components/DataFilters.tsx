@@ -186,7 +186,10 @@ function RangeSlider({
 function InfoPopover({ content }: { content: string }) {
 	return (
 		<Popover className="relative">
-			<PopoverButton className="text-gray-400 hover:text-gray-600 focus:outline-none">
+			<PopoverButton
+				className="text-gray-400 hover:text-gray-600 focus:outline-none"
+				aria-label="More information about this data"
+			>
 				<InformationCircleIcon className="h-4 w-4" />
 			</PopoverButton>
 			<PopoverPanel className="absolute right-0 top-full z-50 mt-1 w-56 rounded-lg border border-gray-200 bg-white p-3 text-gray-600 text-xs shadow-lg">
