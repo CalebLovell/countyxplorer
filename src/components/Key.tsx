@@ -1,5 +1,5 @@
 import { getRouteApi } from "@tanstack/react-router";
-import type { LayerKey } from "~/data/functions";
+import { type LayerKey, layerColors } from "~/data/functions";
 
 const route = getRouteApi("/$layer");
 
@@ -11,28 +11,30 @@ const layerLabels: Record<LayerKey, string> = {
 	median_rent: "Rent",
 };
 
+// Combined layer colors (least similar → most similar, light → dark)
+const combinedColors = [
+	"#FEFFE0",
+	"rgb(254,255,207)",
+	"rgb(202,233,181)",
+	"rgb(133,204,187)",
+	"rgb(73,183,194)",
+	"rgb(50,128,181)",
+	"#205274",
+	"#173B53",
+];
+
 export const Key = () => {
 	const { layer } = route.useParams();
 
-	const lowLabel =
-		layer === "combined"
-			? "Least Similar"
-			: `Low ${layerLabels[layer as LayerKey]}`;
-	const highLabel =
-		layer === "combined"
-			? "Most Similar"
-			: `High ${layerLabels[layer as LayerKey]}`;
+	const isCombined = layer === "combined";
+	const colors = isCombined ? combinedColors : layerColors[layer as LayerKey];
 
-	const colors = [
-		"#FEFFE0",
-		"rgb(254,255,207)",
-		"rgb(202,233,181)",
-		"rgb(133,204,187)",
-		"rgb(73,183,194)",
-		"rgb(50,128,181)",
-		"#205274",
-		"#173B53",
-	];
+	const lowLabel = isCombined
+		? "Least Similar"
+		: `Low ${layerLabels[layer as LayerKey]}`;
+	const highLabel = isCombined
+		? "Most Similar"
+		: `High ${layerLabels[layer as LayerKey]}`;
 
 	return (
 		<div className="-translate-x-1/2 absolute bottom-3 left-1/2 z-10 flex items-center space-x-3 rounded-lg bg-slate-300 bg-opacity-80 p-3 backdrop-blur-sm">

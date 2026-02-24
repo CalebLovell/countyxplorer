@@ -187,6 +187,70 @@ export type LayerKey =
 	| "home_value"
 	| "median_rent";
 
+// Per-layer color palettes (9 colors, low→high value)
+export const layerColors: Record<LayerKey, string[]> = {
+	// Population: yellow → red (YlOrRd)
+	population: [
+		"#ffffcc",
+		"#ffeda0",
+		"#fed976",
+		"#feb24c",
+		"#fd8d3c",
+		"#fc4e2a",
+		"#e31a1c",
+		"#bd0026",
+		"#800026",
+	],
+	// Age: light lavender → dark purple (BuPu), young → old
+	age: [
+		"#f7fcfd",
+		"#e0ecf4",
+		"#bfd3e6",
+		"#9ebcda",
+		"#8c96c6",
+		"#8c6bb1",
+		"#88419d",
+		"#810f7c",
+		"#4d004b",
+	],
+	// Temperature: blue → red (RdBu reversed), cold → hot
+	temperature: [
+		"#2166ac",
+		"#4393c3",
+		"#74add1",
+		"#abd9e9",
+		"#ffffbf",
+		"#fee090",
+		"#fdae61",
+		"#f46d43",
+		"#d73027",
+	],
+	// Home value: light → dark green (Greens), low → high
+	home_value: [
+		"#f7fcf5",
+		"#e5f5e0",
+		"#c7e9c0",
+		"#a1d99b",
+		"#74c476",
+		"#41ab5d",
+		"#238b45",
+		"#006d2c",
+		"#00441b",
+	],
+	// Median rent: light → dark orange (Oranges), low → high
+	median_rent: [
+		"#fff5eb",
+		"#fee6ce",
+		"#fdd0a2",
+		"#fdae6b",
+		"#fd8d3c",
+		"#f16913",
+		"#d94801",
+		"#a63603",
+		"#7f2704",
+	],
+};
+
 export const getLayerColor = (
 	county: CountyData,
 	layer: LayerKey,
@@ -218,10 +282,10 @@ export const getLayerColor = (
 			break;
 	}
 
-	// Count how many thresholds value exceeds (0–8), map to weight 9→1
+	// bucket: 0 = lowest value, 8 = highest value
 	let bucket = 0;
 	for (const t of thresholds) {
 		if (value > t) bucket++;
 	}
-	return colors[9 - bucket];
+	return layerColors[layer][bucket];
 };
