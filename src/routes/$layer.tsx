@@ -3,11 +3,14 @@ import {
 	redirect,
 	stripSearchParams,
 } from "@tanstack/react-router";
+import * as React from "react";
+import { Toaster } from "sonner";
 import { FeedbackButton } from "~/components/FeedbackButton";
 import { Header } from "~/components/Header";
 import { Key } from "~/components/Key";
 import { LeftBar } from "~/components/LeftBar";
 import { RightBar } from "~/components/RightBar";
+import { ShareButton } from "~/components/ShareButton";
 import { USAMap } from "~/components/USAMap";
 import { CountiesProvider } from "~/data/CountiesContext";
 import { fetchData } from "~/data/fetchData";
@@ -45,6 +48,7 @@ export const searchDefaults = {
 	home_value_max: null as number | null,
 	rent_min: null as number | null,
 	rent_max: null as number | null,
+	compare: undefined as string | undefined,
 };
 
 const clampImportance = (v: unknown) =>
@@ -89,6 +93,7 @@ export const Route = createFileRoute("/$layer")({
 		home_value_max: numOrNull(search.home_value_max),
 		rent_min: numOrNull(search.rent_min),
 		rent_max: numOrNull(search.rent_max),
+		compare: typeof search.compare === "string" ? search.compare : undefined,
 	}),
 	search: {
 		middlewares: [stripSearchParams(searchDefaults)],
@@ -99,17 +104,100 @@ export const Route = createFileRoute("/$layer")({
 
 function App() {
 	const counties = Route.useLoaderData();
+	const [leftOpen, setLeftOpen] = React.useState(false);
+	const [rightOpen, setRightOpen] = React.useState(false);
+
 	return (
 		<CountiesProvider counties={counties}>
+			<Toaster position="bottom-center" richColors />
 			<div className="flex h-dvh flex-col items-center bg-radial-[at_bottom_right] from-red-100 via-orange-100 to-blue-100">
 				<Header />
-				<main className="flex min-h-0 w-full flex-1 items-center">
-					<LeftBar />
+				<main className="relative flex min-h-0 w-full flex-1 items-center">
+					{/* Desktop left sidebar */}
+					<div className="hidden h-full lg:block">
+						<LeftBar />
+					</div>
+
+					{/* Map */}
 					<div className="relative h-content w-full">
 						<USAMap />
 						<Key />
+						<div className="absolute top-3 right-3">
+							<ShareButton />
+						</div>
+						{/* Mobile toggle buttons */}
+						<button
+							type="button"
+							onClick={() => setLeftOpen(true)}
+							className="absolute top-14 left-3 flex h-9 w-9 items-center justify-center rounded-lg bg-white/90 text-gray-700 shadow-md backdrop-blur-sm transition-colors hover:bg-indigo-50 lg:hidden"
+							aria-label="Open data panel"
+						>
+							📊
+						</button>
+						<button
+							type="button"
+							onClick={() => setRightOpen(true)}
+							className="absolute top-14 right-14 flex h-9 w-9 items-center justify-center rounded-lg bg-white/90 text-gray-700 shadow-md backdrop-blur-sm transition-colors hover:bg-indigo-50 lg:hidden"
+							aria-label="Open filters"
+						>
+							⚙️
+						</button>
 					</div>
-					<RightBar />
+
+					{/* Desktop right sidebar */}
+					<div className="hidden h-full lg:block">
+						<RightBar />
+					</div>
+
+					{/* Mobile left drawer */}
+					{leftOpen && (
+						<>
+							{/* biome-ignore lint/a11y/noStaticElementInteractions: backdrop */}
+						{/* biome-ignore lint/a11y/useKeyWithClickEvents: backdrop */}
+							<div
+								className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+								onClick={() => setLeftOpen(false)}
+							/>
+							<div className="fixed top-0 left-0 z-40 h-full w-80 overflow-auto bg-white shadow-xl lg:hidden">
+								<div className="flex items-center justify-between border-b p-2">
+									<span className="font-semibold text-sm">Data</span>
+									<button
+										type="button"
+										onClick={() => setLeftOpen(false)}
+										className="rounded p-1 hover:bg-gray-100"
+									>
+										✕
+									</button>
+								</div>
+								<LeftBar />
+							</div>
+						</>
+					)}
+
+					{/* Mobile right drawer */}
+					{rightOpen && (
+						<>
+							{/* biome-ignore lint/a11y/noStaticElementInteractions: backdrop */}
+						{/* biome-ignore lint/a11y/useKeyWithClickEvents: backdrop */}
+							<div
+								className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+								onClick={() => setRightOpen(false)}
+							/>
+							<div className="fixed top-0 right-0 z-40 h-full w-80 overflow-auto bg-white shadow-xl lg:hidden">
+								<div className="flex items-center justify-between border-b p-2">
+									<span className="font-semibold text-sm">Filters</span>
+									<button
+										type="button"
+										onClick={() => setRightOpen(false)}
+										className="rounded p-1 hover:bg-gray-100"
+									>
+										✕
+									</button>
+								</div>
+								<RightBar />
+							</div>
+						</>
+					)}
 				</main>
 			</div>
 			<FeedbackButton />

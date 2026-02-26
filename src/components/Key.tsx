@@ -13,12 +13,13 @@ const layerLabels: Record<LayerKey, string> = {
 
 // Combined layer colors (least similar → most similar, light → dark)
 const combinedColors = [
+	"#ffffff",
 	"#FEFFE0",
-	"rgb(254,255,207)",
-	"rgb(202,233,181)",
-	"rgb(133,204,187)",
-	"rgb(73,183,194)",
-	"rgb(50,128,181)",
+	"#FEFFCF",
+	"#CAE9B5",
+	"#85CCBb",
+	"#49B7C2",
+	"#3280B5",
 	"#205274",
 	"#173B53",
 ];
@@ -37,7 +38,7 @@ export const Key = () => {
 		: `High ${layerLabels[layer as LayerKey]}`;
 
 	return (
-		<div className="-translate-x-1/2 absolute bottom-3 left-1/2 z-10 flex items-center space-x-3 rounded-lg bg-slate-300 bg-opacity-80 p-3 backdrop-blur-sm">
+		<div className="-translate-x-1/2 absolute bottom-0 left-1/2 z-10 flex items-center space-x-3 whitespace-nowrap rounded-lg bg-slate-300 bg-opacity-80 p-3 backdrop-blur-sm">
 			<span className="font-semibold text-black text-xs sm:text-sm">
 				{lowLabel}
 			</span>

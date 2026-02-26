@@ -1,5 +1,6 @@
 import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import type { Feature, GeoJsonProperties, Geometry } from "geojson";
+import * as React from "react";
 import { useCounties } from "~/data/CountiesContext";
 import { getActiveCounty, getColor, getLayerColor } from "~/data/functions";
 import { useFilterRanges } from "~/data/useFilterRanges";
@@ -11,7 +12,7 @@ type Props = {
 	path: string | null;
 };
 
-export const CountyPath = ({ d, path }: Props) => {
+export const CountyPath = React.memo(({ d, path }: Props) => {
 	const { counties, stdev } = useCounties();
 	const { layer } = route.useParams();
 	const search = route.useSearch();
@@ -62,14 +63,28 @@ export const CountyPath = ({ d, path }: Props) => {
 		? layer === "combined"
 			? getColor(activeCounty, filterValues, stdev)
 			: getLayerColor(activeCounty, layer, stdev)
-		: "purple";
+		: "#d1d5db";
 
-	const onClick = () => {
+	const onClick = React.useCallback(() => {
 		navigate({
 			from: "/$layer",
 			search: { ...search, county: isSelected ? null : Number(d.id) },
 		});
-	};
+	}, [navigate, search, isSelected, d.id]);
+
+	const onKeyDown = React.useCallback(
+		(e: React.KeyboardEvent) => {
+			if (e.key === "Enter" || e.key === " ") {
+				e.preventDefault();
+				onClick();
+			}
+		},
+		[onClick],
+	);
+
+	const countyLabel = activeCounty
+		? `${activeCounty.name}, ${activeCounty.state}`
+		: undefined;
 
 	const patternId = `diagonalHatch-${d.id}`;
 	const filterId = `county-glow-${d.id}`;
@@ -90,7 +105,7 @@ export const CountyPath = ({ d, path }: Props) => {
 							y1="0"
 							x2="0"
 							y2="3"
-							stroke={isSelected ? "black" : color}
+							stroke="black"
 							strokeWidth="2"
 							opacity={0.5}
 						/>
@@ -106,7 +121,7 @@ export const CountyPath = ({ d, path }: Props) => {
 					</filter>
 				</defs>
 			)}
-			{/* biome-ignore lint/a11y/noStaticElementInteractions: temp TODO */}
+			{/* biome-ignore lint/a11y/useSemanticElements: SVG path cannot be a <button> */}
 			<path
 				className="cursor-pointer outline-none"
 				d={path ? path : undefined}
@@ -114,8 +129,16 @@ export const CountyPath = ({ d, path }: Props) => {
 				stroke="#090821"
 				strokeWidth={0.3}
 				onClick={onClick}
+				onKeyDown={onKeyDown}
+				role="button"
+				tabIndex={0}
+				aria-label={countyLabel}
 				filter={isSelected ? `url(#${filterId})` : undefined}
-			/>
+			>
+				{countyLabel && <title>{countyLabel}</title>}
+			</path>
 		</>
 	);
-};
+});
+
+CountyPath.displayName = "CountyPath";
