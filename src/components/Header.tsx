@@ -1,4 +1,5 @@
-import { ArrowRightCircleIcon } from "@heroicons/react/24/solid";
+import { CountySearch } from "~/components/CountySearch";
+import { GuideModal } from "~/components/GuideModal";
 import { LayerSwitcher } from "~/components/LayerSwitcher";
 
 export const Header = () => {
@@ -8,19 +9,12 @@ export const Header = () => {
 				<h1 className="flex-1 font-bold text-base text-gray-900 sm:text-xl">
 					USA County Map
 				</h1>
-				<div className="flex flex-1 justify-center">
+				<div className="flex flex-1 items-center justify-center">
 					<LayerSwitcher />
+					<GuideModal />
 				</div>
 				<div className="flex flex-1 justify-end">
-					<button
-						title="Open Slideover"
-						type="button"
-						className="plausible-event-name=Events flex rounded-md p-2 text-gray-900 transition duration-150 ease-in-out hover:bg-gray-200 active:scale-95"
-						onClick={() => null}
-					>
-						<p className="mr-2 hidden font-semibold md:block">Placeholder</p>
-						<ArrowRightCircleIcon className="h-6 w-6 text-blue-900" />
-					</button>
+					<CountySearch />
 				</div>
 			</header>
 			<div className="h-0.5 w-full bg-gradient-to-r from-green-400 via-blue-400 to-purple-400" />

@@ -3,8 +3,8 @@ import { getRouteApi, useNavigate } from "@tanstack/react-router";
 const route = getRouteApi("/$layer");
 
 export const FeedbackButton = () => {
-	const feedbackModal = true;
 	const search = route.useSearch();
+	const { feedbackModal } = search;
 	const navigate = useNavigate();
 
 	if (feedbackModal) return null;

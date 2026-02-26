@@ -2,7 +2,7 @@ import { ArrowPathRoundedSquareIcon } from "@heroicons/react/24/solid";
 import { format } from "date-fns";
 
 export const SocialsFooter = () => {
-	const lastUpdated = new Date();
+	const lastUpdated = new Date("2026-02-25T12:00:00");
 	const formattedLastUpdated = `Data updated on ${format(lastUpdated, `MMM do, yyyy`)}`;
 
 	return (
