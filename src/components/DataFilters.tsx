@@ -2,6 +2,22 @@ import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { useCounties } from "~/data/CountiesContext";
 import { useFilterRanges } from "~/data/useFilterRanges";
 
+const POP_BUCKETS = [0, 10000, 50000, 250000, 1000000, 10000000];
+const POP_LABELS = ["0", "10k", "50k", "250k", "1M", "Max"];
+
+const getBucketIndex = (val: number) => {
+	let closestIndex = 0;
+	let minDiff = Number.POSITIVE_INFINITY;
+	for (let i = 0; i < POP_BUCKETS.length; i++) {
+		const diff = Math.abs(val - POP_BUCKETS[i]);
+		if (diff < minDiff) {
+			minDiff = diff;
+			closestIndex = i;
+		}
+	}
+	return closestIndex;
+};
+
 const route = getRouteApi("/$layer");
 
 export const DataFilters = () => {
@@ -23,8 +39,6 @@ export const DataFilters = () => {
 
 	const {
 		stdev: {
-			population_min,
-			population_max,
 			median_age_min,
 			median_age_max,
 			temperature_min,
@@ -80,9 +94,9 @@ export const DataFilters = () => {
 							Population
 						</span>
 						<div className="flex items-center gap-2">
-							<span className="font-mono text-gray-700 text-xs">
-								{population_val[0].toLocaleString()} -{" "}
-								{population_val[1].toLocaleString()}
+							<span className="font-mono text-gray-700 text-xs text-right min-w-[70px]">
+								{POP_LABELS[getBucketIndex(population_val[0])]} -{" "}
+								{POP_LABELS[getBucketIndex(population_val[1])]}
 							</span>
 							<button
 								type="button"
@@ -105,14 +119,15 @@ export const DataFilters = () => {
 							<div className="relative flex h-6 items-center">
 								<input
 									type="range"
-									step={Math.round((population_max - population_min) / 100)}
-									min={population_min}
-									max={population_max}
-									value={population_val[0]}
+									step={1}
+									min={0}
+									max={POP_BUCKETS.length - 1}
+									value={getBucketIndex(population_val[0])}
 									onChange={(e) => {
-										const newMin = Number(e.target.value);
-										if (newMin <= population_val[1]) {
-											setRange({ population_min: newMin });
+										const newIndex = Number(e.target.value);
+										const maxIndex = getBucketIndex(population_val[1]);
+										if (newIndex <= maxIndex) {
+											setRange({ population_min: POP_BUCKETS[newIndex] });
 										}
 									}}
 									disabled={!population}
@@ -121,20 +136,32 @@ export const DataFilters = () => {
 								/>
 								<input
 									type="range"
-									step={Math.round((population_max - population_min) / 100)}
-									min={population_min}
-									max={population_max}
-									value={population_val[1]}
+									step={1}
+									min={0}
+									max={POP_BUCKETS.length - 1}
+									value={getBucketIndex(population_val[1])}
 									onChange={(e) => {
-										const newMax = Number(e.target.value);
-										if (newMax >= population_val[0]) {
-											setRange({ population_max: newMax });
+										const newIndex = Number(e.target.value);
+										const minIndex = getBucketIndex(population_val[0]);
+										if (newIndex >= minIndex) {
+											setRange({ population_max: POP_BUCKETS[newIndex] });
 										}
 									}}
 									disabled={!population}
 									className="pointer-events-none absolute h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 disabled:opacity-50 [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-indigo-600 disabled:[&::-moz-range-thumb]:cursor-not-allowed [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-indigo-600 disabled:[&::-webkit-slider-thumb]:cursor-not-allowed"
 									style={{ zIndex: 1 }}
 								/>
+							</div>
+							<div className="relative mt-1 h-4 w-full text-[10px] font-medium text-gray-400">
+								{POP_LABELS.map((label, i) => (
+									<span
+										key={label}
+										className="absolute top-0 w-10 -translate-x-1/2 text-center"
+										style={{ left: `calc(8px + ${(i / 5) * 100}% - ${(i / 5) * 16}px)` }}
+									>
+										{label}
+									</span>
+								))}
 							</div>
 						</div>
 						<div>
