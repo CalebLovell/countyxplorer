@@ -27,7 +27,7 @@ export const LayerSwitcher = () => {
 		navigate({ to: "/$layer", params: { layer: key }, search });
 
 	return (
-		<div className="flex max-w-full items-center overflow-x-auto rounded-full bg-white/90 p-1 shadow-lg backdrop-blur-sm [&::-webkit-scrollbar]:hidden">
+		<div className="flex min-w-0 max-w-full items-center overflow-x-auto rounded-full bg-white/90 p-1 shadow-lg backdrop-blur-sm [&::-webkit-scrollbar]:hidden">
 			{layers.map(({ key, label, icon }) => (
 				<button
 					key={key}

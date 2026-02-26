@@ -5,15 +5,15 @@ import { LayerSwitcher } from "~/components/LayerSwitcher";
 export const Header = () => {
 	return (
 		<>
-			<header className="flex h-12 w-full items-center bg-gray-50 px-3 py-2">
-				<h1 className="flex-1 font-bold text-base text-gray-900 sm:text-xl">
+			<header className="flex h-12 w-full items-center justify-between gap-4 bg-gray-50 px-3 py-2">
+				<h1 className="shrink-0 font-bold text-base text-gray-900 sm:text-xl">
 					USA County Map
 				</h1>
-				<div className="flex flex-1 items-center justify-center">
+				<div className="flex min-w-0 flex-1 items-center justify-center">
 					<LayerSwitcher />
 					<GuideModal />
 				</div>
-				<div className="flex flex-1 justify-end">
+				<div className="shrink-0">
 					<CountySearch />
 				</div>
 			</header>
