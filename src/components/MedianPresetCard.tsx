@@ -25,6 +25,9 @@ export const MedianPresetCard = () => {
 			temperature: arrayMedian(counties.map((c) => c.temperature.avgTempF)),
 			homeValue: arrayMedian(counties.map((c) => c.housing.medianHomeValue)),
 			rent: arrayMedian(counties.map((c) => c.rent.medianRent)),
+			politics: arrayMedian(
+				counties.map((c) => c.votes.percentages.republican),
+			),
 		}),
 		[counties],
 	);
@@ -69,6 +72,10 @@ export const MedianPresetCard = () => {
 				Math.max(stdev.medianRent_min, medians.rent - stdev.medianRent_stdev),
 				Math.min(stdev.medianRent_max, medians.rent + stdev.medianRent_stdev),
 			] as [number, number],
+			politics: [
+				Math.max(stdev.politics_min, medians.politics - stdev.politics_stdev),
+				Math.min(stdev.politics_max, medians.politics + stdev.politics_stdev),
+			] as [number, number],
 		}),
 		[medians, stdev],
 	);
@@ -84,6 +91,7 @@ export const MedianPresetCard = () => {
 				temperature: true,
 				home_value: true,
 				median_rent: true,
+				politics: true,
 				population_min: ranges.population[0],
 				population_max: ranges.population[1],
 				age_min: ranges.age[0],
@@ -94,6 +102,8 @@ export const MedianPresetCard = () => {
 				home_value_max: ranges.homeValue[1],
 				rent_min: ranges.rent[0],
 				rent_max: ranges.rent[1],
+				politics_min: ranges.politics[0],
+				politics_max: ranges.politics[1],
 			},
 		});
 	};
@@ -138,6 +148,11 @@ export const MedianPresetCard = () => {
 						label="Rent"
 						value={`$${Math.round(medians.rent).toLocaleString()}`}
 						range={`$${Math.round(ranges.rent[0]).toLocaleString()} – $${Math.round(ranges.rent[1]).toLocaleString()}`}
+					/>
+					<Row
+						label="Political Lean"
+						value={`${medians.politics.toFixed(1)}% R`}
+						range={`${ranges.politics[0].toFixed(1)} – ${ranges.politics[1].toFixed(1)}% R`}
 					/>
 				</div>
 

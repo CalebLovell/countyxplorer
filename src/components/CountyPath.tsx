@@ -21,11 +21,13 @@ export const CountyPath = ({ d, path }: Props) => {
 		temperature,
 		home_value,
 		median_rent,
+		politics,
 		population_importance,
 		age_importance,
 		temperature_importance,
 		home_value_importance,
 		median_rent_importance,
+		politics_importance,
 		county: selectedCountyId,
 	} = search;
 	const {
@@ -34,6 +36,7 @@ export const CountyPath = ({ d, path }: Props) => {
 		temperature_val,
 		home_value_val,
 		median_rent_val,
+		politics_val,
 	} = useFilterRanges();
 	const navigate = useNavigate();
 
@@ -56,6 +59,9 @@ export const CountyPath = ({ d, path }: Props) => {
 		median_rent,
 		median_rent_val,
 		median_rent_importance,
+		politics,
+		politics_val,
+		politics_importance,
 	};
 
 	const color = activeCounty

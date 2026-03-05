@@ -9,6 +9,7 @@ const layerLabels: Record<LayerKey, string> = {
 	temperature: "Temperature",
 	home_value: "Home Value",
 	median_rent: "Rent",
+	politics: "Politics",
 };
 
 // Combined layer colors (least similar → most similar, light → dark)
@@ -31,10 +32,14 @@ export const Key = () => {
 
 	const lowLabel = isCombined
 		? "Least Similar"
-		: `Low ${layerLabels[layer as LayerKey]}`;
+		: layer === "politics"
+			? "Most Democratic"
+			: `Low ${layerLabels[layer as LayerKey]}`;
 	const highLabel = isCombined
 		? "Most Similar"
-		: `High ${layerLabels[layer as LayerKey]}`;
+		: layer === "politics"
+			? "Most Republican"
+			: `High ${layerLabels[layer as LayerKey]}`;
 
 	return (
 		<div className="-translate-x-1/2 absolute bottom-3 left-1/2 z-10 flex items-center space-x-3 rounded-lg bg-slate-300 bg-opacity-80 p-3 backdrop-blur-sm">

@@ -35,6 +35,12 @@ export const DataPanel = () => {
 				? `$${selectedCounty.rent.medianRent.toLocaleString()}`
 				: null,
 		},
+		{
+			title: "Political Lean",
+			value: selectedCounty?.votes
+				? `${selectedCounty.votes.percentages.republican.toFixed(1)}% R / ${selectedCounty.votes.percentages.democrat.toFixed(1)}% D`
+				: null,
+		},
 	];
 
 	if (!selectedCounty) return null;

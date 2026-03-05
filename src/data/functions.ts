@@ -25,6 +25,7 @@ export const standardDeviation = (counties: CountyData[]) => {
 	const temperate = counties.map((x) => x.temperature.avgTempF);
 	const homeValue = counties.map((x) => x.housing.medianHomeValue);
 	const medianRent = counties.map((x) => x.rent.medianRent);
+	const politics = counties.map((x) => x.votes.percentages.republican);
 
 	return {
 		population_stdev: stddev(population) / 2,
@@ -47,6 +48,10 @@ export const standardDeviation = (counties: CountyData[]) => {
 		medianRent_max: Math.max(...medianRent),
 		medianRent_min: Math.min(...medianRent),
 		medianRent_quantiles: computeQuantileThresholds(medianRent, 9),
+		politics_stdev: stddev(politics) / 2,
+		politics_max: Math.max(...politics),
+		politics_min: Math.min(...politics),
+		politics_quantiles: computeQuantileThresholds(politics, 9),
 	};
 };
 
@@ -84,6 +89,9 @@ export const getColor = (
 		median_rent: boolean;
 		median_rent_val: [number, number];
 		median_rent_importance: number;
+		politics: boolean;
+		politics_val: [number, number];
+		politics_importance: number;
 	},
 	stdev: Stdev,
 ) => {
@@ -103,6 +111,9 @@ export const getColor = (
 		median_rent,
 		median_rent_val,
 		median_rent_importance,
+		politics,
+		politics_val,
+		politics_importance,
 	} = filterValues;
 
 	const {
@@ -111,6 +122,7 @@ export const getColor = (
 		temperature_stdev,
 		homeValue_stdev,
 		medianRent_stdev,
+		politics_stdev,
 	} = stdev;
 
 	let totalDeviations = 0;
@@ -161,6 +173,16 @@ export const getColor = (
 		totalImportance += median_rent_importance;
 	}
 
+	if (politics) {
+		const [minVal, maxVal] = politics_val;
+		const rangeCenter = (minVal + maxVal) / 2;
+		const deviation =
+			Math.abs(county.votes.percentages.republican - rangeCenter) /
+			politics_stdev;
+		totalDeviations += deviation * politics_importance;
+		totalImportance += politics_importance;
+	}
+
 	if (totalImportance === 0) {
 		return "#e5e7eb";
 	}
@@ -185,7 +207,8 @@ export type LayerKey =
 	| "age"
 	| "temperature"
 	| "home_value"
-	| "median_rent";
+	| "median_rent"
+	| "politics";
 
 // Per-layer color palettes (9 colors, low→high value)
 export const layerColors: Record<LayerKey, string[]> = {
@@ -249,6 +272,18 @@ export const layerColors: Record<LayerKey, string[]> = {
 		"#a63603",
 		"#7f2704",
 	],
+	// Politics: blue → white → red (RdBu), most Dem → most Rep
+	politics: [
+		"#053061",
+		"#2166ac",
+		"#4393c3",
+		"#92c5de",
+		"#f7f7f7",
+		"#f4a582",
+		"#d6604d",
+		"#b2182b",
+		"#67001f",
+	],
 };
 
 export const getLayerColor = (
@@ -279,6 +314,10 @@ export const getLayerColor = (
 		case "median_rent":
 			value = county.rent.medianRent;
 			thresholds = stdev.medianRent_quantiles;
+			break;
+		case "politics":
+			value = county.votes.percentages.republican;
+			thresholds = stdev.politics_quantiles;
 			break;
 	}
 

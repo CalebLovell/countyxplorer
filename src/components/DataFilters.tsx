@@ -367,11 +367,13 @@ export const DataFilters = () => {
 		temperature,
 		home_value,
 		median_rent,
+		politics,
 		population_importance,
 		age_importance,
 		temperature_importance,
 		home_value_importance,
 		median_rent_importance,
+		politics_importance,
 	} = route.useSearch();
 
 	const search = route.useSearch();
@@ -395,6 +397,9 @@ export const DataFilters = () => {
 			medianRent_min,
 			medianRent_max,
 			medianRent_quantiles,
+			politics_min,
+			politics_max,
+			politics_quantiles,
 		},
 	} = useCounties();
 
@@ -404,6 +409,7 @@ export const DataFilters = () => {
 		temperature_val,
 		home_value_val,
 		median_rent_val,
+		politics_val,
 	} = useFilterRanges();
 
 	const navigate = useNavigate();
@@ -427,6 +433,7 @@ export const DataFilters = () => {
 	const tempValues = counties.map((c) => c.temperature.avgTempF);
 	const homeValueValues = counties.map((c) => c.housing.medianHomeValue);
 	const rentValues = counties.map((c) => c.rent.medianRent);
+	const politicsValues = counties.map((c) => c.votes.percentages.republican);
 
 	// Integer-safe absolute boundaries
 	const popMin = Math.floor(population_min);
@@ -439,6 +446,8 @@ export const DataFilters = () => {
 	const hvMax = Math.ceil(homeValue_max);
 	const rentMin = Math.floor(medianRent_min);
 	const rentMax = Math.ceil(medianRent_max);
+	const polMin = Math.floor(politics_min * 10) / 10;
+	const polMax = Math.ceil(politics_max * 10) / 10;
 
 	return (
 		<section className="relative">
@@ -553,6 +562,27 @@ export const DataFilters = () => {
 					onImportanceChange={(v) => set({ median_rent_importance: v })}
 					formatValue={(v) => `$${v.toLocaleString()}`}
 					infoContent="Source: U.S. Census Bureau ACS and HUD Fair Market Rents. Median gross rent for renter-occupied units. Some counties use estimated data."
+				/>
+
+				{/* Politics */}
+				<FilterCard
+					label="Political Lean"
+					enabled={politics}
+					onToggle={() => set({ politics: !politics })}
+					values={politicsValues}
+					quantiles={politics_quantiles}
+					absMin={polMin}
+					absMax={polMax}
+					currentMin={Math.round(politics_val[0] * 10) / 10}
+					currentMax={Math.round(politics_val[1] * 10) / 10}
+					step={0.1}
+					onRangeChange={(min, max) =>
+						setRange({ politics_min: min, politics_max: max })
+					}
+					importance={politics_importance}
+					onImportanceChange={(v) => set({ politics_importance: v })}
+					formatValue={(v) => `${v.toFixed(1)}% R`}
+					infoContent="Source: MIT Election Data and Science Lab. Republican vote share (%) in the most recent presidential election."
 				/>
 			</div>
 		</section>

@@ -20,6 +20,7 @@ const VALID_LAYERS: Array<"combined" | LayerKey> = [
 	"temperature",
 	"home_value",
 	"median_rent",
+	"politics",
 ];
 
 export const searchDefaults = {
@@ -29,11 +30,13 @@ export const searchDefaults = {
 	temperature: true,
 	home_value: true,
 	median_rent: true,
+	politics: true,
 	population_importance: 3,
 	age_importance: 3,
 	temperature_importance: 3,
 	home_value_importance: 3,
 	median_rent_importance: 3,
+	politics_importance: 3,
 	county: null as number | null,
 	population_min: null as number | null,
 	population_max: null as number | null,
@@ -45,6 +48,8 @@ export const searchDefaults = {
 	home_value_max: null as number | null,
 	rent_min: null as number | null,
 	rent_max: null as number | null,
+	politics_min: null as number | null,
+	politics_max: null as number | null,
 };
 
 const clampImportance = (v: unknown) =>
@@ -73,11 +78,13 @@ export const Route = createFileRoute("/$layer")({
 		temperature: search.temperature !== false,
 		home_value: search.home_value !== false,
 		median_rent: search.median_rent !== false,
+		politics: search.politics !== false,
 		population_importance: clampImportance(search.population_importance),
 		age_importance: clampImportance(search.age_importance),
 		temperature_importance: clampImportance(search.temperature_importance),
 		home_value_importance: clampImportance(search.home_value_importance),
 		median_rent_importance: clampImportance(search.median_rent_importance),
+		politics_importance: clampImportance(search.politics_importance),
 		county: numOrNull(search.county),
 		population_min: numOrNull(search.population_min),
 		population_max: numOrNull(search.population_max),
@@ -89,6 +96,8 @@ export const Route = createFileRoute("/$layer")({
 		home_value_max: numOrNull(search.home_value_max),
 		rent_min: numOrNull(search.rent_min),
 		rent_max: numOrNull(search.rent_max),
+		politics_min: numOrNull(search.politics_min),
+		politics_max: numOrNull(search.politics_max),
 	}),
 	search: {
 		middlewares: [stripSearchParams(searchDefaults)],

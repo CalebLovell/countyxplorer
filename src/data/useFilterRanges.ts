@@ -28,5 +28,9 @@ export const useFilterRanges = () => {
 			search.rent_min ?? stdev.medianRent_min,
 			search.rent_max ?? stdev.medianRent_max,
 		] as [number, number],
+		politics_val: [
+			search.politics_min ?? stdev.politics_min,
+			search.politics_max ?? stdev.politics_max,
+		] as [number, number],
 	};
 };

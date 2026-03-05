@@ -15,6 +15,7 @@ const layers: LayerOption[] = [
 	{ key: "temperature", label: "Temperature" },
 	{ key: "home_value", label: "Home Value" },
 	{ key: "median_rent", label: "Rent" },
+	{ key: "politics", label: "Politics" },
 ];
 
 export const LayerSwitcher = () => {
