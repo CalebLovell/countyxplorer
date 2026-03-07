@@ -37,6 +37,12 @@ export const CountyPath = ({ d, path }: Props) => {
 		home_value_val,
 		median_rent_val,
 		politics_val,
+		population_pref,
+		age_pref,
+		temperature_pref,
+		home_value_pref,
+		median_rent_pref,
+		politics_pref,
 	} = useFilterRanges();
 	const navigate = useNavigate();
 
@@ -46,21 +52,27 @@ export const CountyPath = ({ d, path }: Props) => {
 	const filterValues = {
 		population,
 		population_val,
+		population_pref,
 		population_importance,
 		median_age: age,
 		median_age_val: age_val,
+		median_age_pref: age_pref,
 		age_importance,
 		temperature,
 		temperature_val,
+		temperature_pref,
 		temperature_importance,
 		home_value,
 		home_value_val,
+		home_value_pref,
 		home_value_importance,
 		median_rent,
 		median_rent_val,
+		median_rent_pref,
 		median_rent_importance,
 		politics,
 		politics_val,
+		politics_pref,
 		politics_importance,
 	};
 

@@ -73,7 +73,10 @@ function DistributionChart({
 // ─── Range Slider ──────────────────────────────────────────────────
 
 const THUMB_CLASSES =
-	"pointer-events-none absolute h-2 w-full cursor-pointer appearance-none rounded-lg bg-transparent disabled:opacity-50 [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-indigo-600 disabled:[&::-moz-range-thumb]:cursor-not-allowed [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-indigo-600 disabled:[&::-webkit-slider-thumb]:cursor-not-allowed";
+	"pointer-events-none absolute h-2 w-full cursor-pointer appearance-none rounded-lg bg-transparent disabled:opacity-50 [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-indigo-500 disabled:[&::-moz-range-thumb]:cursor-not-allowed [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-indigo-500 disabled:[&::-webkit-slider-thumb]:cursor-not-allowed";
+
+const SELECTION_THUMB_CLASSES =
+	"pointer-events-none absolute h-2 w-full cursor-pointer appearance-none rounded-lg bg-transparent disabled:opacity-50 [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-2.5 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-sm [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-indigo-900 disabled:[&::-moz-range-thumb]:cursor-not-allowed [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-sm [&::-webkit-slider-thumb]:bg-indigo-900 disabled:[&::-webkit-slider-thumb]:cursor-not-allowed";
 
 function RangeSlider({
 	absMin,
@@ -81,8 +84,10 @@ function RangeSlider({
 	step,
 	currentMin,
 	currentMax,
+	selection,
 	onMinChange,
 	onMaxChange,
+	onSelectionChange,
 	disabled,
 	formatValue,
 }: {
@@ -91,54 +96,51 @@ function RangeSlider({
 	step: number;
 	currentMin: number;
 	currentMax: number;
+	selection: number;
 	onMinChange: (v: number) => void;
 	onMaxChange: (v: number) => void;
+	onSelectionChange: (v: number) => void;
 	disabled: boolean;
 	formatValue: (v: number) => string;
 }) {
 	const range = absMax - absMin || 1;
 	const minPct = ((currentMin - absMin) / range) * 100;
 	const maxPct = ((currentMax - absMin) / range) * 100;
-	const midPct = (minPct + maxPct) / 2;
+	const selPct = ((selection - absMin) / range) * 100;
 
 	return (
 		<div>
 			{/* Value labels above thumbs */}
-			<div className="relative mb-1 h-4">
+			<div className="relative mb-1 h-5">
 				<span
-					className="-translate-x-1/2 absolute whitespace-nowrap font-mono text-[10px] text-indigo-700"
+					className="-translate-x-1/2 absolute whitespace-nowrap font-mono text-[10px] text-indigo-500"
 					style={{ left: `${minPct}%` }}
 				>
-					{formatValue(currentMin)}
+					Min: {formatValue(currentMin)}
 				</span>
 				<span
-					className="-translate-x-1/2 absolute whitespace-nowrap font-mono text-[10px] text-indigo-700"
+					className="-translate-x-1/2 absolute whitespace-nowrap font-mono text-[10px] text-indigo-500"
 					style={{ left: `${maxPct}%` }}
 				>
-					{formatValue(currentMax)}
+					Max: {formatValue(currentMax)}
+				</span>
+				<span
+					className="-translate-x-1/2 absolute top-0 whitespace-nowrap font-mono font-semibold text-[10px] text-indigo-900"
+					style={{ left: `${selPct}%` }}
+				>
+					↓ {formatValue(selection)}
 				</span>
 			</div>
 
-			{/* Track + preference cursor + dual thumbs */}
+			{/* Track + three thumbs */}
 			<div className="relative flex h-8 items-center">
 				{/* Background track */}
 				<div className="absolute h-2 w-full rounded-lg bg-gray-200" />
-				{/* Active fill between thumbs */}
+				{/* Active fill between min and max */}
 				<div
-					className="absolute h-2 rounded-lg bg-indigo-300"
+					className="absolute h-2 rounded-lg bg-indigo-200"
 					style={{ left: `${minPct}%`, right: `${100 - maxPct}%` }}
 				/>
-				{/* Preference cursor at range midpoint */}
-				{!disabled && (
-					<div
-						className="-translate-x-1/2 absolute flex flex-col items-center"
-						style={{ left: `${midPct}%`, zIndex: 5 }}
-						title="Preference target (range midpoint)"
-					>
-						<div className="h-4 w-0.5 rounded-full bg-indigo-500" />
-						<div className="-mt-0.5 h-1.5 w-1.5 rounded-full border border-indigo-500 bg-white" />
-					</div>
-				)}
 				{/* Min thumb */}
 				<input
 					type="range"
@@ -166,6 +168,20 @@ function RangeSlider({
 					}}
 					disabled={disabled}
 					className={`${THUMB_CLASSES} z-10`}
+				/>
+				{/* Selection thumb — clamped to [currentMin, currentMax] */}
+				<input
+					type="range"
+					step={step}
+					min={absMin}
+					max={absMax}
+					value={selection}
+					onChange={(e) => {
+						const v = Number(e.target.value);
+						onSelectionChange(Math.min(currentMax, Math.max(currentMin, v)));
+					}}
+					disabled={disabled}
+					className={`${SELECTION_THUMB_CLASSES} z-30`}
 				/>
 			</div>
 
@@ -243,8 +259,9 @@ type FilterCardProps = {
 	absMax: number;
 	currentMin: number;
 	currentMax: number;
+	selection: number;
 	step: number;
-	onRangeChange: (min: number, max: number) => void;
+	onRangeChange: (min: number, max: number, selection: number) => void;
 	importance: number;
 	onImportanceChange: (v: number) => void;
 	formatValue: (v: number) => string;
@@ -261,6 +278,7 @@ function FilterCard({
 	absMax,
 	currentMin,
 	currentMax,
+	selection,
 	step,
 	onRangeChange,
 	importance,
@@ -270,7 +288,8 @@ function FilterCard({
 }: FilterCardProps) {
 	const [localMin, setLocalMin] = useState(currentMin);
 	const [localMax, setLocalMax] = useState(currentMax);
-	const latestRef = useRef({ min: currentMin, max: currentMax });
+	const [localSelection, setLocalSelection] = useState(selection);
+	const latestRef = useRef({ min: currentMin, max: currentMax, selection });
 
 	// Sync when upstream changes (e.g., preset applied externally)
 	useEffect(() => {
@@ -281,20 +300,42 @@ function FilterCard({
 		setLocalMax(currentMax);
 		latestRef.current.max = currentMax;
 	}, [currentMax]);
+	useEffect(() => {
+		setLocalSelection(selection);
+		latestRef.current.selection = selection;
+	}, [selection]);
 
 	const debouncedRangeChange = useDebouncedCallback(() => {
-		onRangeChange(latestRef.current.min, latestRef.current.max);
+		onRangeChange(
+			latestRef.current.min,
+			latestRef.current.max,
+			latestRef.current.selection,
+		);
 	}, 250);
 
 	const handleMinChange = (v: number) => {
 		setLocalMin(v);
 		latestRef.current.min = v;
+		if (latestRef.current.selection < v) {
+			setLocalSelection(v);
+			latestRef.current.selection = v;
+		}
 		debouncedRangeChange();
 	};
 
 	const handleMaxChange = (v: number) => {
 		setLocalMax(v);
 		latestRef.current.max = v;
+		if (latestRef.current.selection > v) {
+			setLocalSelection(v);
+			latestRef.current.selection = v;
+		}
+		debouncedRangeChange();
+	};
+
+	const handleSelectionChange = (v: number) => {
+		setLocalSelection(v);
+		latestRef.current.selection = v;
 		debouncedRangeChange();
 	};
 
@@ -330,8 +371,10 @@ function FilterCard({
 				step={step}
 				currentMin={localMin}
 				currentMax={localMax}
+				selection={localSelection}
 				onMinChange={handleMinChange}
 				onMaxChange={handleMaxChange}
+				onSelectionChange={handleSelectionChange}
 				disabled={!enabled}
 				formatValue={formatValue}
 			/>
@@ -410,6 +453,12 @@ export const DataFilters = () => {
 		home_value_val,
 		median_rent_val,
 		politics_val,
+		population_pref,
+		age_pref,
+		temperature_pref,
+		home_value_pref,
+		median_rent_pref,
+		politics_pref,
 	} = useFilterRanges();
 
 	const navigate = useNavigate();
@@ -473,8 +522,13 @@ export const DataFilters = () => {
 					currentMin={Math.round(population_val[0])}
 					currentMax={Math.round(population_val[1])}
 					step={Math.max(1, Math.round((popMax - popMin) / 100))}
-					onRangeChange={(min, max) =>
-						setRange({ population_min: min, population_max: max })
+					selection={Math.round(population_pref)}
+					onRangeChange={(min, max, sel) =>
+						setRange({
+							population_min: min,
+							population_max: max,
+							population_pref: sel,
+						})
 					}
 					importance={population_importance}
 					onImportanceChange={(v) => set({ population_importance: v })}
@@ -494,7 +548,10 @@ export const DataFilters = () => {
 					currentMin={Math.round(age_val[0])}
 					currentMax={Math.round(age_val[1])}
 					step={1}
-					onRangeChange={(min, max) => setRange({ age_min: min, age_max: max })}
+					selection={Math.round(age_pref)}
+					onRangeChange={(min, max, sel) =>
+						setRange({ age_min: min, age_max: max, age_pref: sel })
+					}
 					importance={age_importance}
 					onImportanceChange={(v) => set({ age_importance: v })}
 					formatValue={(v) => `${v}yr`}
@@ -513,8 +570,13 @@ export const DataFilters = () => {
 					currentMin={Math.round(temperature_val[0])}
 					currentMax={Math.round(temperature_val[1])}
 					step={1}
-					onRangeChange={(min, max) =>
-						setRange({ temperature_min: min, temperature_max: max })
+					selection={Math.round(temperature_pref)}
+					onRangeChange={(min, max, sel) =>
+						setRange({
+							temperature_min: min,
+							temperature_max: max,
+							temperature_pref: sel,
+						})
 					}
 					importance={temperature_importance}
 					onImportanceChange={(v) => set({ temperature_importance: v })}
@@ -534,8 +596,13 @@ export const DataFilters = () => {
 					currentMin={Math.round(home_value_val[0])}
 					currentMax={Math.round(home_value_val[1])}
 					step={Math.max(1, Math.round((hvMax - hvMin) / 100))}
-					onRangeChange={(min, max) =>
-						setRange({ home_value_min: min, home_value_max: max })
+					selection={Math.round(home_value_pref)}
+					onRangeChange={(min, max, sel) =>
+						setRange({
+							home_value_min: min,
+							home_value_max: max,
+							home_value_pref: sel,
+						})
 					}
 					importance={home_value_importance}
 					onImportanceChange={(v) => set({ home_value_importance: v })}
@@ -555,8 +622,9 @@ export const DataFilters = () => {
 					currentMin={Math.round(median_rent_val[0])}
 					currentMax={Math.round(median_rent_val[1])}
 					step={Math.max(1, Math.round((rentMax - rentMin) / 100))}
-					onRangeChange={(min, max) =>
-						setRange({ rent_min: min, rent_max: max })
+					selection={Math.round(median_rent_pref)}
+					onRangeChange={(min, max, sel) =>
+						setRange({ rent_min: min, rent_max: max, rent_pref: sel })
 					}
 					importance={median_rent_importance}
 					onImportanceChange={(v) => set({ median_rent_importance: v })}
@@ -576,8 +644,13 @@ export const DataFilters = () => {
 					currentMin={Math.round(politics_val[0] * 10) / 10}
 					currentMax={Math.round(politics_val[1] * 10) / 10}
 					step={0.1}
-					onRangeChange={(min, max) =>
-						setRange({ politics_min: min, politics_max: max })
+					selection={Math.round(politics_pref * 10) / 10}
+					onRangeChange={(min, max, sel) =>
+						setRange({
+							politics_min: min,
+							politics_max: max,
+							politics_pref: sel,
+						})
 					}
 					importance={politics_importance}
 					onImportanceChange={(v) => set({ politics_importance: v })}

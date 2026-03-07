@@ -50,6 +50,12 @@ export const searchDefaults = {
 	rent_max: null as number | null,
 	politics_min: null as number | null,
 	politics_max: null as number | null,
+	population_pref: null as number | null,
+	age_pref: null as number | null,
+	temperature_pref: null as number | null,
+	home_value_pref: null as number | null,
+	rent_pref: null as number | null,
+	politics_pref: null as number | null,
 };
 
 const clampImportance = (v: unknown) =>
@@ -98,6 +104,12 @@ export const Route = createFileRoute("/$layer")({
 		rent_max: numOrNull(search.rent_max),
 		politics_min: numOrNull(search.politics_min),
 		politics_max: numOrNull(search.politics_max),
+		population_pref: numOrNull(search.population_pref),
+		age_pref: numOrNull(search.age_pref),
+		temperature_pref: numOrNull(search.temperature_pref),
+		home_value_pref: numOrNull(search.home_value_pref),
+		rent_pref: numOrNull(search.rent_pref),
+		politics_pref: numOrNull(search.politics_pref),
 	}),
 	search: {
 		middlewares: [stripSearchParams(searchDefaults)],

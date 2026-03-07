@@ -76,43 +76,49 @@ export const getColor = (
 	filterValues: {
 		population: boolean;
 		population_val: [number, number];
+		population_pref: number;
 		population_importance: number;
 		median_age: boolean;
 		median_age_val: [number, number];
+		median_age_pref: number;
 		age_importance: number;
 		temperature: boolean;
 		temperature_val: [number, number];
+		temperature_pref: number;
 		temperature_importance: number;
 		home_value: boolean;
 		home_value_val: [number, number];
+		home_value_pref: number;
 		home_value_importance: number;
 		median_rent: boolean;
 		median_rent_val: [number, number];
+		median_rent_pref: number;
 		median_rent_importance: number;
 		politics: boolean;
 		politics_val: [number, number];
+		politics_pref: number;
 		politics_importance: number;
 	},
 	stdev: Stdev,
 ) => {
 	const {
 		population,
-		population_val,
+		population_pref,
 		population_importance,
 		median_age,
-		median_age_val,
+		median_age_pref,
 		age_importance,
 		temperature,
-		temperature_val,
+		temperature_pref,
 		temperature_importance,
 		home_value,
-		home_value_val,
+		home_value_pref,
 		home_value_importance,
 		median_rent,
-		median_rent_val,
+		median_rent_pref,
 		median_rent_importance,
 		politics,
-		politics_val,
+		politics_pref,
 		politics_importance,
 	} = filterValues;
 
@@ -129,55 +135,45 @@ export const getColor = (
 	let totalImportance = 0;
 
 	if (population) {
-		const [minVal, maxVal] = population_val;
-		const rangeCenter = (minVal + maxVal) / 2;
 		const deviation =
-			Math.abs(county.population - rangeCenter) / population_stdev;
+			Math.abs(county.population - population_pref) / population_stdev;
 		totalDeviations += deviation * population_importance;
 		totalImportance += population_importance;
 	}
 
 	if (median_age) {
-		const [minVal, maxVal] = median_age_val;
-		const rangeCenter = (minVal + maxVal) / 2;
 		const deviation =
-			Math.abs(county.medianAge - rangeCenter) / median_age_stdev;
+			Math.abs(county.medianAge - median_age_pref) / median_age_stdev;
 		totalDeviations += deviation * age_importance;
 		totalImportance += age_importance;
 	}
 
 	if (temperature) {
-		const [minVal, maxVal] = temperature_val;
-		const rangeCenter = (minVal + maxVal) / 2;
 		const deviation =
-			Math.abs(county.temperature.avgTempF - rangeCenter) / temperature_stdev;
+			Math.abs(county.temperature.avgTempF - temperature_pref) /
+			temperature_stdev;
 		totalDeviations += deviation * temperature_importance;
 		totalImportance += temperature_importance;
 	}
 
 	if (home_value) {
-		const [minVal, maxVal] = home_value_val;
-		const rangeCenter = (minVal + maxVal) / 2;
 		const deviation =
-			Math.abs(county.housing.medianHomeValue - rangeCenter) / homeValue_stdev;
+			Math.abs(county.housing.medianHomeValue - home_value_pref) /
+			homeValue_stdev;
 		totalDeviations += deviation * home_value_importance;
 		totalImportance += home_value_importance;
 	}
 
 	if (median_rent) {
-		const [minVal, maxVal] = median_rent_val;
-		const rangeCenter = (minVal + maxVal) / 2;
 		const deviation =
-			Math.abs(county.rent.medianRent - rangeCenter) / medianRent_stdev;
+			Math.abs(county.rent.medianRent - median_rent_pref) / medianRent_stdev;
 		totalDeviations += deviation * median_rent_importance;
 		totalImportance += median_rent_importance;
 	}
 
 	if (politics) {
-		const [minVal, maxVal] = politics_val;
-		const rangeCenter = (minVal + maxVal) / 2;
 		const deviation =
-			Math.abs(county.votes.percentages.republican - rangeCenter) /
+			Math.abs(county.votes.percentages.republican - politics_pref) /
 			politics_stdev;
 		totalDeviations += deviation * politics_importance;
 		totalImportance += politics_importance;
